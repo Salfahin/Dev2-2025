@@ -82,7 +82,6 @@ def nouvelle_affaire_interface(fenetre):
             "Découverte de cadavre", "Demande d’assistance inter-service",
             "Enquête préventive / filature", "Faits inexpliqués / à déterminer",
         ]),
-        "✏️ Autre (à préciser)"
     ]
 
     selected_type = tk.StringVar()
