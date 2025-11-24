@@ -4,7 +4,7 @@ from gui.accueil import accueil
 def main():
     fenetre = tk.Tk()
     fenetre.title("AffairTrack")
-    fenetre.geometry("650x700")
+    fenetre.geometry("700x750")
 
     accueil(fenetre)
 

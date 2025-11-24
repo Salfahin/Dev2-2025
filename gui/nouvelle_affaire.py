@@ -6,34 +6,45 @@ from data.stockage import sauvegarder_affaire
 
 def nouvelle_affaire_interface(fenetre):
 
+    # Nettoyage
     for widget in fenetre.winfo_children():
         widget.destroy()
 
     fenetre.title("Nouvelle Affaire")
 
-    titre = tk.Label(fenetre, text="Nouvelle Affaire", font=("Arial", 18))
+    # ⭐ FRAME QUI CENTRE TOUT ⭐
+    wrapper = tk.Frame(fenetre)
+    wrapper.pack(expand=True)  # Centre verticalement ET horizontalement
+
+    # Frame interne contenant tout le formulaire
+    contenu = tk.Frame(wrapper)
+    contenu.pack()
+
+    # === TITRE PRINCIPAL ===
+    titre = tk.Label(contenu, text="Nouvelle Affaire", font=("Arial", 18))
     titre.pack(pady=10)
 
-    frame = tk.Frame(fenetre)
-    frame.pack(padx=20, pady=10, fill="both", expand=True)
+    # Frame du formulaire
+    frame = tk.Frame(contenu)
+    frame.pack(padx=20, pady=10)
 
     # === TITRE ===
-    tk.Label(frame, text="Titre de l’affaire :").grid(row=0, column=0, sticky="w")
+    tk.Label(frame, text="Titre de l’affaire :").grid(row=0, column=0, sticky="w", padx=5)
     entry_titre = tk.Entry(frame, width=50)
     entry_titre.grid(row=0, column=1, pady=5, sticky="w")
 
     # === DATE ===
-    tk.Label(frame, text="Date et heure du signalement :").grid(row=1, column=0, sticky="w")
+    tk.Label(frame, text="Date et heure du signalement :").grid(row=1, column=0, sticky="w", padx=5)
     entry_date = tk.Entry(frame, width=50)
     entry_date.grid(row=1, column=1, pady=5, sticky="w")
 
     # === LIEU ===
-    tk.Label(frame, text="Lieu de l’incident :").grid(row=2, column=0, sticky="w")
+    tk.Label(frame, text="Lieu de l’incident :").grid(row=2, column=0, sticky="w", padx=5)
     entry_lieu = tk.Entry(frame, width=50)
     entry_lieu.grid(row=2, column=1, pady=5, sticky="w")
 
-    # === TYPES D’AFFAIRES TRÈS COMPLETS ===
-    tk.Label(frame, text="Type d’affaire :").grid(row=3, column=0, sticky="w")
+    # === TYPES D’AFFAIRES ===
+    tk.Label(frame, text="Type d’affaire :").grid(row=3, column=0, sticky="w", padx=5)
 
     types_affaires = [
         "🔪 — Infractions contre la personne —",
@@ -90,8 +101,8 @@ def nouvelle_affaire_interface(fenetre):
     menu_type.set("Choisir ou écrire un type d’affaire…")
     menu_type.grid(row=3, column=1, pady=5, sticky="w")
 
-    # === PERSONNES IMPLIQUÉES (VERSION COMPLÈTE !) ===
-    tk.Label(frame, text="Personnes impliquées :").grid(row=5, column=0, sticky="nw")
+    # === PERSONNES IMPLIQUÉES ===
+    tk.Label(frame, text="Personnes impliquées :").grid(row=5, column=0, sticky="nw", padx=5)
 
     personnes_frame = tk.Frame(frame)
     personnes_frame.grid(row=5, column=1, sticky="w")
@@ -179,17 +190,17 @@ def nouvelle_affaire_interface(fenetre):
     tk.Button(personnes_frame, text="Ajouter", command=ajouter_personne).pack(side="left", padx=5)
 
     # === DESCRIPTION ===
-    tk.Label(frame, text="Description / résumé rapide :").grid(row=7, column=0, sticky="nw")
+    tk.Label(frame, text="Description / résumé rapide :").grid(row=7, column=0, sticky="nw", padx=5)
     entry_desc = tk.Text(frame, width=38, height=5)
     entry_desc.grid(row=7, column=1, pady=5, sticky="w")
 
     # === RESPONSABLES ===
-    tk.Label(frame, text="Responsable(s) de l’affaire :").grid(row=8, column=0, sticky="w")
+    tk.Label(frame, text="Responsable(s) de l’affaire :").grid(row=8, column=0, sticky="w", padx=5)
     entry_resp = tk.Entry(frame, width=50)
     entry_resp.grid(row=8, column=1, pady=5, sticky="w")
 
     # === PHOTOS ===
-    tk.Label(frame, text="Pièces jointes (photos) :").grid(row=9, column=0, sticky="nw")
+    tk.Label(frame, text="Pièces jointes (photos) :").grid(row=9, column=0, sticky="nw", padx=5)
     photos = []
 
     def ajouter_photo():
@@ -207,17 +218,17 @@ def nouvelle_affaire_interface(fenetre):
     liste_photos.grid(row=10, column=1, pady=5, sticky="w")
 
     # === ÉTAT ===
-    tk.Label(frame, text="État de l’enquête :").grid(row=11, column=0, sticky="w")
+    tk.Label(frame, text="État de l’enquête :").grid(row=11, column=0, sticky="w", padx=5)
     selected_etat = tk.StringVar(value="🟢 En cours")
     tk.OptionMenu(frame, selected_etat, "🟢 En cours", "🟡 À surveiller", "🔵 Gelée — manque d'informations").grid(row=11, column=1, sticky="w")
 
     # === URGENCE ===
-    tk.Label(frame, text="Indicateur d’urgence :").grid(row=12, column=0, sticky="w")
+    tk.Label(frame, text="Indicateur d’urgence :").grid(row=12, column=0, sticky="w", padx=5)
     selected_urgence = tk.StringVar(value="⚪ Faible")
     tk.OptionMenu(frame, selected_urgence, "⚪ Faible", "🟡 Moyen", "🟠 Élevé", "🔴 Critique").grid(row=12, column=1, sticky="w")
 
     # === BOUTONS ===
-    btns = tk.Frame(fenetre)
+    btns = tk.Frame(contenu)
     btns.pack(pady=20)
 
     def annuler():
