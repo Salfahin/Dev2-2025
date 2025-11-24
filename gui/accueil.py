@@ -59,9 +59,9 @@ def accueil(fenetre):
     canvas.bind("<Configure>", resize_frame)
 
     # Molette souris
-    canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(-1 * int(e.delta / 120), "units"))
-    canvas.bind_all("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-    canvas.bind_all("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+    canvas.bind("<MouseWheel>", lambda e: canvas.yview_scroll(-1 * int(e.delta / 120), "units"))
+    canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
+    canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
 
     # ======================================
     #   CHARGEMENT DES AFFAIRES
