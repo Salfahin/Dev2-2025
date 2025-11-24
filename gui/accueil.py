@@ -1,19 +1,30 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 
 from gui.nouvelle_affaire import nouvelle_affaire_interface
-from gui.ouvrir_affaire import ouvrir_affaire  # ← ajouté
+from gui.ouvrir_affaire import ouvrir_affaire
 from utils.loader import charger_affaires, trier_par_etat
+
+# Stocke le bind global actuel (pour pouvoir le supprimer)
+global_mousewheel_bind = False
 
 
 # ============================================================
 #   INTERFACE D'ACCUEIL
 # ============================================================
 def accueil(fenetre):
+    global global_mousewheel_bind
 
     # Nettoyage
     for widget in fenetre.winfo_children():
         widget.destroy()
+
+    # Désactive d'éventuels anciens scrolls globaux
+    if global_mousewheel_bind:
+        fenetre.unbind_all("<MouseWheel>")
+        fenetre.unbind_all("<Button-4>")
+        fenetre.unbind_all("<Button-5>")
+        global_mousewheel_bind = False
 
     fenetre.title("AffairTrack")
 
@@ -32,7 +43,7 @@ def accueil(fenetre):
     bouton.pack(fill="x", padx=40, pady=20)
 
     # ======================================
-    #   SCROLLBAR PRINCIPALE
+    #   SCROLLBAR + CANVAS
     # ======================================
     conteneur_scroll = tk.Frame(fenetre)
     conteneur_scroll.pack(fill="both", expand=True)
@@ -49,19 +60,33 @@ def accueil(fenetre):
     frame_global = tk.Frame(canvas, bg="#f0f0f0")
     window_id = canvas.create_window((0, 0), window=frame_global, anchor="nw")
 
+    # Mise à jour automatique de la taille
     def update_scrollregion(event=None):
         canvas.configure(scrollregion=canvas.bbox("all"))
+
     frame_global.bind("<Configure>", update_scrollregion)
 
-    def resize_frame(event):
+    def resize_canvas(event):
         canvas.itemconfig(window_id, width=event.width)
-        update_scrollregion()
-    canvas.bind("<Configure>", resize_frame)
 
-    # Molette souris
-    canvas.bind("<MouseWheel>", lambda e: canvas.yview_scroll(-1 * int(e.delta / 120), "units"))
-    canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-1, "units"))
-    canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(1, "units"))
+    canvas.bind("<Configure>", resize_canvas)
+
+    # ======================================
+    #   SCROLL GLOBAL — ACTIF UNIQUEMENT DANS L’ACCUEIL
+    # ======================================
+    def _global_mousewheel(event):
+        if event.delta:
+            canvas.yview_scroll(-1 * int(event.delta / 120), "units")
+        else:
+            if event.num == 4:
+                canvas.yview_scroll(-1, "units")
+            elif event.num == 5:
+                canvas.yview_scroll(1, "units")
+
+    fenetre.bind("<MouseWheel>", _global_mousewheel)
+    fenetre.bind("<Button-4>", _global_mousewheel)
+    fenetre.bind("<Button-5>", _global_mousewheel)
+    global_mousewheel_bind = True
 
     # ======================================
     #   CHARGEMENT DES AFFAIRES
@@ -72,14 +97,10 @@ def accueil(fenetre):
     # ======================================
     #   AFFICHAGE DES CARTES
     # ======================================
-    # (inchangé, je le laisse dans accueil.py pour éviter modification)
-
     def afficher_cartes(frame_parent, liste_affaires):
-
         cards = []
 
         for affaire in liste_affaires:
-
             card = tk.Frame(
                 frame_parent,
                 bd=1,
@@ -97,8 +118,12 @@ def accueil(fenetre):
 
             cards.append(card)
 
-            tk.Label(card_inner, text=affaire["titre"], font=("Arial", 12, "bold"),
-                     bg="white", wraplength=290, justify="left").pack(anchor="w")
+            tk.Label(
+                card_inner,
+                text=affaire["titre"],
+                font=("Arial", 12, "bold"),
+                bg="white", wraplength=290, justify="left"
+            ).pack(anchor="w")
 
             tk.Label(card_inner, text=f"📍 {affaire['lieu']}", bg="white").pack(anchor="w")
             tk.Label(card_inner, text=f"📅 Dernier mouvement : {affaire['date_dernier_mouvement']}", bg="white").pack(anchor="w")
@@ -117,6 +142,7 @@ def accueil(fenetre):
                 command=lambda p=affaire["path"]: ouvrir_affaire(p)
             ).pack(anchor="e", pady=5)
 
+        # Positionnement responsive
         def repositionner(event=None):
             largeur = frame_parent.winfo_width()
             carte_largeur = 340
