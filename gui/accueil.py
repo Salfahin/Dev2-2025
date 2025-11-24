@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import TclError
 
 from gui.nouvelle_affaire import nouvelle_affaire_interface
 from gui.ouvrir_affaire import ouvrir_affaire
@@ -75,13 +76,23 @@ def accueil(fenetre):
     #   SCROLL GLOBAL — ACTIF UNIQUEMENT DANS L’ACCUEIL
     # ======================================
     def _global_mousewheel(event):
-        if event.delta:
-            canvas.yview_scroll(-1 * int(event.delta / 120), "units")
-        else:
-            if event.num == 4:
-                canvas.yview_scroll(-1, "units")
-            elif event.num == 5:
-                canvas.yview_scroll(1, "units")
+        try:
+            if event.delta:
+                # Windows / MacOS
+                canvas.yview_scroll(-1 * int(event.delta / 120), "units")
+            else:
+                # Linux
+                if event.num == 4:
+                    canvas.yview_scroll(-1, "units")
+                elif event.num == 5:
+                    canvas.yview_scroll(1, "units")
+
+        except TclError:
+            # Le canvas a été détruit ou n'existe plus
+            pass
+
+        except Exception as e:
+            print("Erreur dans _global_mousewheel :", e)
 
     fenetre.bind("<MouseWheel>", _global_mousewheel)
     fenetre.bind("<Button-4>", _global_mousewheel)
