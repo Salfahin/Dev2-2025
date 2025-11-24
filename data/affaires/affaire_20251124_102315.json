@@ -1,0 +1,32 @@
+{
+    "titre": "L’Immeuble 13",
+    "date": "15 août 2024 – 06h00",
+    "lieu": "Tour 13, Bloc Est, Cyberville",
+    "type_affaire": "Disparition collective / Événement inexpliqué",
+    "personnes": [
+        {
+            "role": "🟦 Victime",
+            "nom": "42 résidents",
+            "identité": "",
+            "adresse": "",
+            "contact": "",
+            "liens": "tous disparu",
+            "historique": ""
+        },
+        {
+            "role": "🟥 Suspect",
+            "nom": "Joachim V.",
+            "identité": "concierge",
+            "adresse": "",
+            "contact": "",
+            "liens": "",
+            "historique": "retrouvé mutique en sous-sol"
+        }
+    ],
+    "description": "Un matin, tous les habitants de l’Immeuble 13 ont disparu. Aucun bruit, aucune fuite, aucune trace de lutte. Seul le concierge a été retrouvé, figé, incapable de prononcer un mot. Depuis, il reste hospitalisé dans un état catatonique. Quand on lui montre des photos de l’immeuble, il saigne du nez. Aucune explication rationnelle n’a été trouvée.",
+    "responsables": "Inspecteur Scott Détective – Dossier classé faute de pistes",
+    "photos": [],
+    "etat": "🔵 Gelée — manque d'informations",
+    "urgence": "⚪ Faible",
+    "creation_time": "2025-11-24 10:23:16"
+}

@@ -1,0 +1,23 @@
+{
+    "titre": "Les Messages de l’Ancienne Ligne 4",
+    "date": "01 novembre 2025 – 09h00",
+    "lieu": "Divers foyers situés le long de l’ancienne Ligne 4 (désaffectée), Cyberville",
+    "type_affaire": "Phénomène inexpliqué / Communication anormale",
+    "personnes": [
+        {
+            "role": "🧑‍⚖️ Partie civile",
+            "nom": "Plaignants divers",
+            "identité": "",
+            "adresse": "",
+            "contact": "",
+            "liens": "environ 17 signalements confirmés",
+            "historique": ""
+        }
+    ],
+    "description": "Des citoyens affirment recevoir chaque mois, à la même date et même heure, un message étrange sur des téléphones qu’ils n’utilisent plus depuis des années. Le message évoque un accident ferroviaire qui n’a jamais eu lieu, signé \"A.L.4\". Aucun moyen de remonter l’expéditeur. Certains affirment que le message semble évoluer légèrement chaque mois.",
+    "responsables": "Inspecteur Scott Détective – Observation mensuelle, collaboration avec service archives transports",
+    "photos": [],
+    "etat": "🟡 À surveiller",
+    "urgence": "⚪ Faible",
+    "creation_time": "2025-11-24 10:20:58"
+}
