@@ -29,10 +29,13 @@ def accueil(fenetre):
     fenetre.title("AffairTrack")
 
     # ======================================
-    #   BOUTON : NOUVELLE AFFAIRE
+    #   BOUTONS : NOUVELLE AFFAIRE + AFFAIRES CLASSEES
     # ======================================
-    bouton = tk.Button(
-        fenetre,
+    frame_top_buttons = tk.Frame(fenetre)
+    frame_top_buttons.pack(fill="x", padx=40, pady=20)
+
+    bouton_nouvelle = tk.Button(
+        frame_top_buttons,
         text="Nouvelle Affaire",
         font=("Arial", 16, "bold"),
         padx=20,
@@ -40,7 +43,18 @@ def accueil(fenetre):
         height=2,
         command=lambda: nouvelle_affaire_interface(fenetre)
     )
-    bouton.pack(fill="x", padx=40, pady=20)
+    bouton_nouvelle.pack(side="left", expand=True, fill="x", padx=(0, 10))
+
+    bouton_classees = tk.Button(
+        frame_top_buttons,
+        text="Affaires classées",
+        font=("Arial", 16, "bold"),
+        padx=20,
+        pady=15,
+        height=2,
+        command=lambda: messagebox.showinfo("Affaires classées", "Fonction à implémenter")
+    )
+    bouton_classees.pack(side="left", expand=True, fill="x", padx=(10, 0))
 
     # ======================================
     #   SCROLLBAR + CANVAS
