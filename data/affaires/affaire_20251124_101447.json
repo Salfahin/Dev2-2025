@@ -1,32 +1,32 @@
 {
-    "titre": "La Disparition de la Mémoire",
-    "date": "18 novembre 2025 – 03h42 du matin",
-    "lieu": "Rue Alcyon, Quartier des Tours, Cyberville",
-    "type_affaire": "Disparition / Altération mentale suspecte",
-    "personnes": [
-        {
-            "role": "🟦 Victime",
-            "nom": "inconnue",
-            "identité": "",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": "porte un badge au nom de \"Éliane Mouré\""
-        },
-        {
-            "role": "🚓 Auteur présumé",
-            "nom": "Delgrès",
-            "identité": "Directeur de la Tour Centrale 7",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": ""
-        }
-    ],
-    "description": "Une femme a été retrouvée désorientée, en état de choc, errant dans les rues du Quartier des Tours. Elle ne se souvient ni de son nom ni de son passé. L’adresse sur son badge renvoie à un appartement vidé de fond en comble. Aucun enregistrement disponible de son passage dans l’immeuble professionnel la nuit de l’incident. Vidéosurveillance effacée de 22h à 2h.",
-    "responsables": "Inspecteur Scott Détective (moi-même), assisté par l’agent Lino",
-    "photos": [],
-    "etat": "🟢 En cours",
-    "urgence": "🟠 Élevé",
-    "creation_time": "2025-11-24 10:14:48"
+  "titre": "La Disparition de la Mémoire",
+  "date": "18 novembre 2025 – 03h42 du matin",
+  "lieu": "Rue Alcyon, Quartier des Tours, Cyberville",
+  "type_affaire": "Disparition / Altération mentale suspecte",
+  "personnes": [
+    {
+      "role": "🟦 Victime",
+      "nom": "inconnue",
+      "identité": "",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": "porte un badge au nom de \"Éliane Mouré\""
+    },
+    {
+      "role": "🚓 Auteur présumé",
+      "nom": "Delgrès",
+      "identité": "Directeur de la Tour Centrale 7",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    }
+  ],
+  "description": "Une femme a été retrouvée désorientée, en état de choc, errant dans les rues du Quartier des Tours. Elle ne se souvient ni de son nom ni de son passé. L’adresse sur son badge renvoie à un appartement vidé de fond en comble. Aucun enregistrement disponible de son passage dans l’immeuble professionnel la nuit de l’incident. Vidéosurveillance effacée de 22h à 2h.",
+  "responsables": "Inspecteur Scott Détective (moi-même), assisté par l’agent Lino",
+  "photos": [],
+  "etat": "🟢 En cours",
+  "urgence": "🟠 Élevé",
+  "creation_time": "2025-11-24 10:14:48"
 }
