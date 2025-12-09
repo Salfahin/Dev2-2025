@@ -6,7 +6,11 @@ from gui.modifier_affaire import modif_affaire
 # ============================================================
 #   FENÊTRE POP-UP : OUVERTURE D'UNE AFFAIRE
 # ============================================================
-def ouvrir_affaire(path):
+def ouvrir_affaire(path, on_refresh_home=None):
+    """
+    on_refresh_home : callback optionnel (ex: lambda: accueil(fenetre))
+    qui sera appelé après une modification pour recharger la page d'origine.
+    """
     try:
         with open(path, "r", encoding="utf-8") as f:
             affaire = json.load(f)
@@ -33,7 +37,7 @@ def ouvrir_affaire(path):
         text="Modifier ✎",
         font=("Arial", 12, "bold"),
         bg="#ececec",
-        command=lambda: modif_affaire(path, popup, ouvrir_affaire)
+        command=lambda: modif_affaire(path, popup, ouvrir_affaire, on_refresh_home)
     ).pack(side="right", padx=15, pady=10)
 
     canvas = tk.Canvas(popup, bg="white")
@@ -99,7 +103,3 @@ def ouvrir_affaire(path):
         add_label(f"Contact : {p.get('contact','—')}")
         add_label(f"Liens : {p.get('liens','—')}")
         add_label(f"Notes : {p.get('historique','—')}")
-
-    popup.mainloop()
-
-    

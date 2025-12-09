@@ -1,0 +1,32 @@
+{
+  "titre": "test classee",
+  "date": "09/12/2026 17:00",
+  "lieu": "Bruxelles",
+  "type_affaire": "Homicide volontaire",
+  "personnes": [
+    {
+      "role": "🟦 Victime",
+      "nom": "Jean",
+      "identité": "",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    },
+    {
+      "role": "🟥 Suspect",
+      "nom": "Christophe",
+      "identité": "",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    }
+  ],
+  "description": "tué à l'arme à feu",
+  "responsables": "Lieutenant Guillaume",
+  "photos": [],
+  "etat": "🟣 Affaire classée",
+  "urgence": "🟠 Élevé",
+  "creation_time": "2025-12-09 16:43:28"
+}

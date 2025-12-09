@@ -1,50 +1,50 @@
 {
-    "titre": "Le Voleur aux Mains Givrées",
-    "date": "21 novembre 2025 – 01h15 du matin",
-    "lieu": "Condominium C-72, Tour Émeraude, Cyberville",
-    "type_affaire": "Cambriolages répétés / Signature énigmatique",
-    "personnes": [
-        {
-            "role": "🟦 Victime",
-            "nom": "Pascale Neri",
-            "identité": "courtier",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": ""
-        },
-        {
-            "role": "🟦 Victime",
-            "nom": "Mona Lévy",
-            "identité": "Consultante IA",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": ""
-        },
-        {
-            "role": "🟦 Victime",
-            "nom": "Maître Koro",
-            "identité": "avocat",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": ""
-        },
-        {
-            "role": "🟥 Suspect",
-            "nom": "Inconnu",
-            "identité": "Surnommé \"le Voleur aux Mains Givrées\"",
-            "adresse": "",
-            "contact": "",
-            "liens": "",
-            "historique": ""
-        }
-    ],
-    "description": "Trois appartements de luxe cambriolés sans aucune trace d'effraction. Aucun système d’alarme déclenché. Sur chaque scène, une sculpture de glace représentant une main humaine est retrouvée sur la table du salon. Un des propriétaires affirme avoir entendu son nom chuchoté dans son sommeil la nuit du vol. La régularité et la mise en scène indiquent un mode opératoire planifié.",
-    "responsables": "Inspecteur Scott Détective, surveillances assurées par agents de la section nocturne",
-    "photos": [],
-    "etat": "🟢 En cours",
-    "urgence": "🟡 Moyen",
-    "creation_time": "2025-11-24 10:17:03"
+  "titre": "Le Voleur aux Mains Givrées",
+  "date": "21 novembre 2025 – 01h15 du matin",
+  "lieu": "Condominium C-72, Tour Émeraude, Cyberville",
+  "type_affaire": "Cambriolages répétés / Signature énigmatique",
+  "personnes": [
+    {
+      "role": "🟦 Victime",
+      "nom": "Pascale Neri",
+      "identité": "courtier",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    },
+    {
+      "role": "🟦 Victime",
+      "nom": "Mona Lévy",
+      "identité": "Consultante IA",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    },
+    {
+      "role": "🟦 Victime",
+      "nom": "Maître Koro",
+      "identité": "avocat",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    },
+    {
+      "role": "🟥 Suspect",
+      "nom": "Inconnu",
+      "identité": "Surnommé \"le Voleur aux Mains Givrées\"",
+      "adresse": "",
+      "contact": "",
+      "liens": "",
+      "historique": ""
+    }
+  ],
+  "description": "Trois appartements de luxe cambriolés sans aucune trace d'effraction. Aucun système d’alarme déclenché. Sur chaque scène, une sculpture de glace représentant une main humaine est retrouvée sur la table du salon. Un des propriétaires affirme avoir entendu son nom chuchoté dans son sommeil la nuit du vol. La régularité et la mise en scène indiquent un mode opératoire planifié.",
+  "responsables": "Inspecteur Scott Détective, surveillances assurées par agents de la section nocturne",
+  "photos": [],
+  "etat": "🟢 En cours",
+  "urgence": "🟡 Moyen",
+  "creation_time": "2025-11-24 10:17:03"
 }

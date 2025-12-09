@@ -2,11 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 
-def modif_affaire(path, parent_popup, ouvrir_affaire):
+def modif_affaire(path, parent_popup, ouvrir_affaire, on_refresh_home=None):
     """
     Ouvre une fenêtre d'édition pour l'affaire située à `path`.
+
     parent_popup : la fenêtre d'affichage (Toplevel) à fermer/recharger après sauvegarde.
-    ouvrir_affaire : fonction permettant de recharger l'affichage après sauvegarde.
+    ouvrir_affaire : fonction permettant de recharger l'affichage de l'affaire après sauvegarde.
+    on_refresh_home : callback optionnel pour rafraîchir l'écran d'accueil / liste après modification.
     """
     # charger le fichier
     try:
@@ -59,7 +61,26 @@ def modif_affaire(path, parent_popup, ouvrir_affaire):
     lieu_ent = add_entry("Lieu :", affaire.get("lieu", ""))
     type_ent = add_entry("Type d'affaire :", affaire.get("type_affaire", ""))
     resp_ent = add_entry("Responsables :", affaire.get("responsables", ""))
-    etat_ent = add_entry("État :", affaire.get("etat", ""))
+
+    # ======== ÉTAT AVEC LISTE DÉROULANTE ========
+    tk.Label(scrollable_frame, text="État :", anchor="w").pack(anchor="w", pady=(6, 0))
+
+    valeurs_etat = [
+        "🟢 En cours",
+        "🟡 À surveiller",
+        "🔵 Gelée — manque d'informations",
+        "🟣 Affaire classée",
+    ]
+
+    etat_var = tk.StringVar()
+    etat_initiale = affaire.get("etat") or valeurs_etat[0]
+    if etat_initiale not in valeurs_etat:
+        valeurs_etat.append(etat_initiale)
+    etat_var.set(etat_initiale)
+
+    etat_menu = tk.OptionMenu(scrollable_frame, etat_var, *valeurs_etat)
+    etat_menu.pack(fill="x")
+
     urg_ent = add_entry("Niveau d'urgence :", affaire.get("urgence", ""))
 
     tk.Label(scrollable_frame, text="Description :").pack(anchor="w", pady=(8, 0))
@@ -80,7 +101,7 @@ def modif_affaire(path, parent_popup, ouvrir_affaire):
             "lieu": lieu_ent.get().strip(),
             "type_affaire": type_ent.get().strip(),
             "responsables": resp_ent.get().strip(),
-            "etat": etat_ent.get().strip(),
+            "etat": etat_var.get().strip(),
             "urgence": urg_ent.get().strip(),
             "description": desc_txt.get("1.0", "end").strip(),
         }
@@ -121,10 +142,25 @@ def modif_affaire(path, parent_popup, ouvrir_affaire):
             parent_popup.destroy()
         except Exception:
             pass
+
+        # On rouvre la popup de l'affaire mise à jour
         try:
-            ouvrir_affaire(path)
+            ouvrir_affaire(path, on_refresh_home)
+        except TypeError:
+            # Compat si ouvrir_affaire n'a pas encore été mis à jour
+            try:
+                ouvrir_affaire(path)
+            except Exception:
+                pass
         except Exception:
             pass
+
+        # Et on rafraîchit la page d'où on vient (accueil ou affaires classées)
+        if on_refresh_home is not None:
+            try:
+                on_refresh_home()
+            except Exception:
+                pass
 
     def on_cancel(event=None):
         current = _build_new_data_from_widgets()
@@ -154,7 +190,7 @@ def modif_affaire(path, parent_popup, ouvrir_affaire):
         lieu_ent.delete(0, "end"); lieu_ent.insert(0, _original_data.get("lieu", "") or "")
         type_ent.delete(0, "end"); type_ent.insert(0, _original_data.get("type_affaire", "") or "")
         resp_ent.delete(0, "end"); resp_ent.insert(0, _original_data.get("responsables", "") or "")
-        etat_ent.delete(0, "end"); etat_ent.insert(0, _original_data.get("etat", "") or "")
+        etat_var.set(_original_data.get("etat", "") or "")
         urg_ent.delete(0, "end"); urg_ent.insert(0, _original_data.get("urgence", "") or "")
         desc_txt.delete("1.0", "end"); desc_txt.insert("1.0", _original_data.get("description", "") or "")
         personnes_txt.delete("1.0", "end"); personnes_txt.insert("1.0",
