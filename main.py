@@ -1,14 +1,31 @@
+from __future__ import annotations
+
 import tkinter as tk
-from gui.accueil import accueil
+import os
+
+from core.services.storage_service import StorageService
+from core.services.affaire_service import AffaireService
+from gui.accueil_view import AccueilView
+
 
 def main():
-    fenetre = tk.Tk()
-    fenetre.title("AffairTrack")
-    fenetre.geometry("700x750")
+    # Dossier où sont stockées les affaires JSON
+    base_path = os.path.join("data", "affaires")
 
-    accueil(fenetre)
+    # Initialisation du stockage
+    storage = StorageService(base_path)
 
-    fenetre.mainloop()
+    # Service métier principal
+    service = AffaireService(storage)
+
+    # Lancement interface graphique
+    root = tk.Tk()
+    root.title("AffairTrack")
+
+    AccueilView(root, service)
+
+    root.mainloop()
+
 
 if __name__ == "__main__":
     main()
