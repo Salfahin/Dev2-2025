@@ -8,6 +8,7 @@ from typing import Callable, Optional, List
 from core.models.affaire import Affaire
 from core.models.personne import Personne
 from core.services.affaire_service import AffaireService
+from utils.date_time_picker import DateTimePicker
 
 
 class ModifierAffaireView:
@@ -79,11 +80,12 @@ class ModifierAffaireView:
         self.titre_entry = tk.Entry(self.frame)
         self.titre_entry.pack(fill="x")
         self.titre_entry.insert(0, self.affaire.titre)
+        
+        #date
+        tk.Label(self.frame, text="Date et heure (YYYY-MM-DD HH:MM)").pack(anchor="w", pady=(10, 0))
+        self.date_picker = DateTimePicker(self.frame, initial=self.affaire.date)
+        self.date_picker.pack(anchor="w", pady=(0, 6))
 
-        tk.Label(self.frame, text="Date").pack(anchor="w", pady=(10, 0))
-        self.date_entry = tk.Entry(self.frame)
-        self.date_entry.pack(fill="x")
-        self.date_entry.insert(0, self.affaire.date)
 
         tk.Label(self.frame, text="Lieu").pack(anchor="w", pady=(10, 0))
         self.lieu_entry = tk.Entry(self.frame)
@@ -405,7 +407,7 @@ class ModifierAffaireView:
     def save(self):
         # Récupération des champs
         self.affaire.titre = self.titre_entry.get().strip()
-        self.affaire.date = self.date_entry.get().strip()
+        self.affaire.date = self.date_picker.get_value()
         self.affaire.lieu = self.lieu_entry.get().strip()
         self.affaire.type_affaire = self.type_affaire_combo.get().strip()
         self.affaire.urgence = self.urgence_combo.get().strip()

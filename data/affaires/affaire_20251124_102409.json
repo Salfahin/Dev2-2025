@@ -1,13 +1,12 @@
 {
     "titre": "Le Dernier Cri de Madame X",
-    "date": "19 mars 2025 – 02h53",
+    "date": "2025-03-19 02:53",
     "lieu": "Inconnu – Appel sans localisation",
     "type_affaire": "Signalement sonore anonyme / Enregistrement fantôme",
-    "personnes": [],
     "description": "Un appel d’urgence a été reçu, contenant uniquement un cri de femme, court mais intense. Impossible de tracer l’appel. Des mois plus tard, ce même cri a été entendu dans un documentaire audio enregistré cinq ans auparavant. Vérifications croisées, analyses sonores, tout confirme : c’est exactement le même cri. Mais aucune explication sur comment il a pu \"réapparaître\".",
     "responsables": "Inspecteur Scott Détective – Aucun lien trouvé entre les deux enregistrements",
     "photos": [],
     "etat": "🔵 Gelée — manque d'informations",
     "urgence": "⚪ Faible",
-    "creation_time": "2025-11-24 10:24:09"
+    "personnes": []
 }
