@@ -399,7 +399,16 @@ class ModifierAffaireView:
     # ---------------------------------------------------------
     def cancel(self):
         if messagebox.askyesno("Annuler", "Voulez-vous annuler sans sauvegarder ?"):
+        # retirer le scroll global de cette popup
+            self.canvas.unbind_all("<MouseWheel>")
+
             self.popup.destroy()
+
+            # Redonner la main à l'accueil 
+            if self.on_done:
+                self.on_done()
+
+           
 
     # ---------------------------------------------------------
     #   SAUVEGARDE
