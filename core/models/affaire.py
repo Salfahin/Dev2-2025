@@ -77,4 +77,4 @@ class Affaire:
         return sum(1 for p in self.personnes if "Suspect" in p.role)
 
     def nombre_temoins(self) -> int:
-        return sum(1 for p in self.personnes if "témo" in p.role.lower())
+        return sum(1 for p in self.personnes if "témoin" in p.role.lower())
