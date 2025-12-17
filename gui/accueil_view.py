@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 from tkinter import messagebox
@@ -17,6 +18,7 @@ class AccueilView:
     def __init__(self, root: tk.Tk, service: AffaireService):
         self.root = root
         self.service = service
+        self.root.configure(bg=BG_MAIN)
         self.root.title("AffairTrack")
 
         # Pour gérer les bindings de scroll global
@@ -32,6 +34,7 @@ class AccueilView:
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        self.root.configure(bg=BG_MAIN)
         self.root.geometry("700x750")
 
         # Désactive anciens scrolls
@@ -48,9 +51,9 @@ class AccueilView:
     #   BOUTONS DU HAUT
     # -------------------------------------------------------
     def build_top_buttons(self):
-        top_bar = tk.Frame(self.root)
+        top_bar = tk.Frame(self.root, bg=BG_MAIN)
         top_bar.pack(fill="x", padx=40, pady=20)
-        frame = tk.Frame(self.root)
+        frame = tk.Frame(self.root, bg=BG_MAIN)
         frame.pack(fill="x", padx=40, pady=20)
 
         # Nouveau
@@ -58,7 +61,7 @@ class AccueilView:
             frame,
             text="Nouvelle Affaire",
             font=("Arial", 16, "bold"),
-            padx=20, pady=15,
+            padx=20, pady=15, bg=PRIMARY, fg="white",
             command=lambda: NouvelleAffaireView(self.root, self.service, on_done=self.refresh)
         )
         btn_new.pack(side="left", expand=True, fill="x", padx=(0, 10))
@@ -68,7 +71,7 @@ class AccueilView:
             frame,
             text="Affaires classées",
             font=("Arial", 16, "bold"),
-            padx=20, pady=15,
+            padx=20, pady=15, bg=PRIMARY, fg="white",
             command=self.show_affaires_classees
         )
         btn_closed.pack(side="left", expand=True, fill="x", padx=(10, 0))
@@ -78,7 +81,7 @@ class AccueilView:
             frame,
             text="🔍 Filtrer",
             font=("Arial", 16, "bold"),
-            padx=20, pady=15,
+            padx=20, pady=15, bg=PRIMARY, fg="white",
             command=self.open_filter_popup
         )
         btn_filter.pack(side="left", expand=True, fill="x", padx=(10, 0))
@@ -104,19 +107,19 @@ class AccueilView:
     # -------------------------------------------------------
     def build_affaires_section(self):
         # Scroll global
-        container = tk.Frame(self.root)
+        container = tk.Frame(self.root, bg=BG_MAIN)
         container.pack(fill="both", expand=True)
 
         scrollbar = tk.Scrollbar(container, orient="vertical")
         scrollbar.pack(side="left", fill="y")
 
-        self.canvas = tk.Canvas(container, highlightthickness=0, bg="#f0f0f0")
+        self.canvas = tk.Canvas(container, highlightthickness=0, bg=BG_MAIN)
         self.canvas.pack(side="right", fill="both", expand=True)
 
         self.canvas.configure(yscrollcommand=scrollbar.set)
         scrollbar.configure(command=self.canvas.yview)
 
-        self.frame_global = tk.Frame(self.canvas, bg="#f0f0f0")
+        self.frame_global = tk.Frame(self.canvas, bg=BG_MAIN)
         self.window_id = self.canvas.create_window((0, 0), window=self.frame_global, anchor="nw")
 
         # Auto resize
@@ -172,22 +175,22 @@ class AccueilView:
 
         # Section : En cours
         tk.Label(self.frame_global, text="🟢 Affaires en cours",
-            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(10, 5))
-        frame_cours = tk.Frame(self.frame_global, bg="#f0f0f0")
+            font=SECTION_FONT, bg=BG_MAIN, fg=SUCCESS).pack(anchor="w", pady=(10, 5))
+        frame_cours = tk.Frame(self.frame_global, bg=BG_MAIN)
         frame_cours.pack(fill="x")
         self._afficher_cartes(frame_cours, en_cours)
 
         # Section : Surveiller
         tk.Label(self.frame_global, text="🟡 Affaires à surveiller",
-            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
-        frame_surv = tk.Frame(self.frame_global, bg="#f0f0f0")
+            font=SECTION_FONT, bg=BG_MAIN, fg=WARNING).pack(anchor="w", pady=(20, 5))
+        frame_surv = tk.Frame(self.frame_global, bg=BG_MAIN)
         frame_surv.pack(fill="x")
         self._afficher_cartes(frame_surv, surveiller)
 
         # Section : Gelée
         tk.Label(self.frame_global, text="🔵 Affaires gelées",
-            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
-        frame_gel = tk.Frame(self.frame_global, bg="#f0f0f0")
+            font=SECTION_FONT, bg=BG_MAIN, fg=INFO).pack(anchor="w", pady=(20, 5))
+        frame_gel = tk.Frame(self.frame_global, bg=BG_MAIN)
         frame_gel.pack(fill="x")
         self._afficher_cartes(frame_gel, gelee)
 
@@ -199,19 +202,18 @@ class AccueilView:
         cards = []
 
         for affaire in affaires:
-            card = tk.Frame(parent, bd=1, relief="solid", bg="white", width=320, height=210)
+            card = tk.Frame(parent, bg=BG_CARD, highlightbackground=BORDER, highlightthickness=1, width=320, height=210)
             card.pack_propagate(False)
 
-            content = tk.Frame(card, bg="white")
+            content = tk.Frame(card, bg=BG_CARD)
             content.pack(fill="both", expand=True, padx=10, pady=10)
 
             # Texte
-            tk.Label(content, text=affaire.titre, font=("Arial", 12, "bold"), bg="white",
-                     wraplength=290, justify="left").pack(anchor="w")
+            tk.Label(content, text=affaire.titre, font=CARD_TITLE_FONT, bg=BG_CARD, fg=TEXT_MAIN).pack(anchor="w")
 
-            tk.Label(content, text=f"📍 {affaire.lieu}", bg="white").pack(anchor="w")
-            tk.Label(content, text=f"🧩 {affaire.type_affaire}", bg="white").pack(anchor="w")
-            tk.Label(content, text=f"👮 {affaire.responsables}", bg="white").pack(anchor="w")
+            tk.Label(content, text=f"📍 {affaire.lieu}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
+            tk.Label(content, text=f"🧩 {affaire.type_affaire}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
+            tk.Label(content, text=f"👮 {affaire.responsables}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
 
             tk.Label(content, text=f"Victimes: {affaire.nombre_victimes()}   "
                                    f"Suspects: {affaire.nombre_suspects()}   "
@@ -219,7 +221,17 @@ class AccueilView:
                      bg="white").pack(anchor="w")
 
             # Ouvrir affaire
-            tk.Button(content, text="Ouvrir",
+            tk.Button(content,
+                text="Ouvrir",
+                font=("Segoe UI", 10, "bold"),
+                bg=PRIMARY,
+                fg="white",
+                bd=0,
+                padx=14,
+                pady=7,
+                cursor="hand2",
+                activebackground=PRIMARY_DARK,
+                activeforeground="white",
                       command=lambda a=affaire: OuvrirAffaireView(self.root, self.service, a, on_done=self.refresh)
                       ).pack(anchor="e", pady=5)
 
@@ -227,9 +239,11 @@ class AccueilView:
             btn_delete = tk.Button(
                 card,
                 text="✖",
-                fg="red",
-                bg="white",
-                bd=0,
+                fg=DANGER,
+                bg=BG_CARD,
+                bd=0, cursor="hand2",
+                font=("Segoe UI", 11, "bold"),
+                activeforeground="#991b1b",
                 command=lambda a=affaire, c=card: self._supprimer_affaire(a, c)
             )
             btn_delete.place(relx=1.0, x=-5, y=5, anchor="ne")
@@ -272,14 +286,16 @@ class AccueilView:
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        self.root.configure(bg=BG_MAIN)
+
         # Titre + retour
-        top = tk.Frame(self.root)
+        top = tk.Frame(self.root, bg=BG_MAIN)
         top.pack(fill="x", padx=40, pady=10)
 
         tk.Button(top, text="⬅ Retour", font=("Arial", 12, "bold"),
                   command=self.refresh).pack(side="left")
 
-        tk.Label(top, text="Affaires classées", font=("Arial", 18, "bold")).pack(side="left", padx=40)
+        tk.Label(top, text="Affaires classées", font=("Arial", 18, "bold"), bg=BG_MAIN).pack(side="left", padx=40)
 
         # Setup scroll area
         container = tk.Frame(self.root)
