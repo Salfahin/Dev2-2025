@@ -105,6 +105,11 @@ class AccueilView:
     # -------------------------------------------------------
     def enable_global_mousewheel(self):
         def _mouse(event):
+            if not hasattr(self, "canvas"):
+                return
+            if not self.canvas.winfo_exists():
+                return
+
             if event.delta:
                 self.canvas.yview_scroll(-int(event.delta / 120), "units")
             else:

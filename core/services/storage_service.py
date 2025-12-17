@@ -38,7 +38,7 @@ class StorageService(StorageInterface):
         """
 
         if filename is None:
-            horodatage = datetime.now().strftime("%Y%m%d_%H%M%S")
+            horodatage = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             filename = f"affaire_{horodatage}.json"
 
         full_path = os.path.join(self.base_path, filename)

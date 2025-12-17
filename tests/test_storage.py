@@ -7,7 +7,6 @@ from core.services.storage_service import StorageService
 class TestStorageService(unittest.TestCase):
 
     def setUp(self):
-        # Crée un dossier temporaire pour stocker les JSON de test
         self.temp_dir = tempfile.TemporaryDirectory()
         self.storage = StorageService(self.temp_dir.name)
 
@@ -18,6 +17,8 @@ class TestStorageService(unittest.TestCase):
         data = {"titre": "Affaire A"}
         path = self.storage.save(data)
 
+        self.assertTrue(os.path.exists(path))
+
         filename = os.path.basename(path)
         loaded = self.storage.load(filename)
 
@@ -26,8 +27,9 @@ class TestStorageService(unittest.TestCase):
     def test_list_files(self):
         self.storage.save({"a": 1})
         self.storage.save({"b": 2})
-        files = self.storage.list_files()
 
+        files = self.storage.list_files()
+        self.assertIsInstance(files, list)
         self.assertEqual(len(files), 2)
 
     def test_delete(self):
@@ -36,11 +38,17 @@ class TestStorageService(unittest.TestCase):
 
         self.storage.delete(filename)
 
-        self.assertEqual(self.storage.list_files(), [])
+        self.assertEqual(len(self.storage.list_files()), 0)
 
     def test_load_all(self):
         self.storage.save({"t": 1})
         self.storage.save({"t": 2})
 
         loaded = self.storage.load_all()
+
+        self.assertIsInstance(loaded, dict)
         self.assertEqual(len(loaded), 2)
+
+        for filename, content in loaded.items():
+            self.assertTrue(filename.endswith(".json"))
+            self.assertIn("t", content)

@@ -8,19 +8,31 @@ from core.models.affaire import Affaire
 class TestAffaireService(unittest.TestCase):
 
     def setUp(self):
-        # Fake storage pour mocker les opérations
         self.storage = MagicMock()
         self.service = AffaireService(self.storage)
 
     def test_get_all(self):
         self.storage.load_all.return_value = {
-            "file1.json": {"titre": "A", "date": "2024", "lieu": "Paris", "type_affaire": "Vol"},
-            "file2.json": {"titre": "B", "date": "2024", "lieu": "Lyon", "type_affaire": "Fraude"},
+            "file1.json": {
+                "titre": "A",
+                "date": "2024",
+                "lieu": "Paris",
+                "type_affaire": "Vol"
+            },
+            "file2.json": {
+                "titre": "B",
+                "date": "2024",
+                "lieu": "Lyon",
+                "type_affaire": "Fraude"
+            },
         }
+
         affaires = self.service.get_all()
 
         self.assertEqual(len(affaires), 2)
+        self.assertIsInstance(affaires[0], Affaire)
         self.assertEqual(affaires[0].titre, "A")
+        self.assertEqual(affaires[1].lieu, "Lyon")
 
     def test_trier_par_etat(self):
         a1 = Affaire("A", "2024", "Paris", "Vol", etat="🟢 En cours")
@@ -30,6 +42,7 @@ class TestAffaireService(unittest.TestCase):
         en_cours, surveiller, gelee = self.service.trier_par_etat([a1, a2, a3])
 
         self.assertEqual(len(en_cours), 1)
+        self.assertEqual(en_cours[0].titre, "A")
         self.assertEqual(len(surveiller), 1)
         self.assertEqual(len(gelee), 1)
 
@@ -46,4 +59,15 @@ class TestAffaireService(unittest.TestCase):
         a = Affaire("A", "2024", "Paris", "Vol")
         self.service.save(a)
 
-        self.assertTrue(self.storage.save.called)
+        self.storage.save.assert_called_once()
+        args, kwargs = self.storage.save.call_args
+        saved_data = args[0]
+
+        self.assertIsInstance(saved_data, dict)
+        self.assertEqual(saved_data["titre"], "A")
+
+    def test_get_all_empty(self):
+        self.storage.load_all.return_value = {}
+
+        affaires = self.service.get_all()
+        self.assertEqual(affaires, [])
