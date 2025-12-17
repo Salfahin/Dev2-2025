@@ -8,6 +8,7 @@ from typing import Callable, Optional, List
 from core.models.affaire import Affaire
 from core.models.personne import Personne
 from core.services.affaire_service import AffaireService
+from utils.date_time_picker import DateTimePicker
 
 
 class ModifierAffaireView:
@@ -15,12 +16,15 @@ class ModifierAffaireView:
     Vue permettant de modifier une affaire déjà existante.
     """
 
-    def __init__(self, root: tk.Tk, service: AffaireService,
-                 affaire: Affaire, on_done: Optional[Callable] = None):
-
+    def __init__(
+        self,
+        root: tk.Tk,
+        affaire: Affaire,
+        service: AffaireService,
+        on_done: Optional[Callable[[], None]] = None
+    ):
         self.root = root
         self.service = service
-        self.affaire_originale = affaire
         self.on_done = on_done
 
         # On travaille sur une copie modifiable
@@ -39,79 +43,122 @@ class ModifierAffaireView:
         self.popup.title("Modifier l'affaire")
         self.popup.geometry("750x750")
 
-        # -------- SCROLLABLE ZONE --------
+        # Scrollable container (Canvas + Frame)
         container = tk.Frame(self.popup)
         container.pack(fill="both", expand=True)
 
-        canvas = tk.Canvas(container)
-        canvas.pack(side="left", fill="both", expand=True)
+        self.canvas = tk.Canvas(container, highlightthickness=0)
+        self.canvas.pack(side="left", fill="both", expand=True)
 
-        scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(container, orient="vertical", command=self.canvas.yview)
         scrollbar.pack(side="right", fill="y")
 
-        canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        self.frame = tk.Frame(canvas)
-        window_id = canvas.create_window((0, 0), window=self.frame, anchor="nw")
+        self.frame = tk.Frame(self.canvas)
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.frame, anchor="nw")
 
-        self.frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.bind("<Configure>", lambda e: canvas.itemconfig(window_id, width=e.width))
+        def on_frame_configure(_event=None):
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-        # ---------------- Remplir le contenu ----------------
-        self._build_form()
+        def on_canvas_configure(event):
+            # Ajuste la largeur du frame interne à la largeur du canvas
+            self.canvas.itemconfig(self.canvas_window, width=event.width)
 
-        # -------- Boutons bas --------
-        btns = tk.Frame(self.popup)
-        btns.pack(fill="x", pady=10)
+        self.frame.bind("<Configure>", on_frame_configure)
+        self.canvas.bind("<Configure>", on_canvas_configure)
 
-        tk.Button(btns, text="💾 Enregistrer", bg="#cce5ff",
-                  command=self.save).pack(side="right", padx=6)
+        # (Optionnel) scroll molette Windows
+        def _on_mousewheel(event):
+            # event.delta >0 (haut) / <0 (bas)
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
-        tk.Button(btns, text="✖ Annuler", bg="#f8d7da",
-                  command=self.cancel).pack(side="right", padx=6)
+        self.canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
-        tk.Button(btns, text="↺ Réinitialiser", bg="#e2e3e5",
-                  command=self.reset).pack(side="right", padx=6)
+        # ---- Champs principaux
+        tk.Label(self.frame, text="Titre").pack(anchor="w", pady=(10, 0))
+        self.titre_entry = tk.Entry(self.frame)
+        self.titre_entry.pack(fill="x")
+        self.titre_entry.insert(0, self.affaire.titre)
+        
+        #date
+        tk.Label(self.frame, text="Date et heure (YYYY-MM-DD HH:MM)").pack(anchor="w", pady=(10, 0))
+        self.date_picker = DateTimePicker(self.frame, initial=self.affaire.date)
+        self.date_picker.pack(anchor="w", pady=(0, 6))
 
-    # ---------------------------------------------------------
-    #   FORMULAIRE PRINCIPAL
-    # ---------------------------------------------------------
-    def _build_form(self):
-        # Section titre
-        tk.Label(self.frame, text="Modifier l'affaire", font=("Arial", 18, "bold"),
-                 bg="white").pack(anchor="w", pady=10)
 
-        # Champs simples
-        self.entry_titre = self._entry("Titre :", self.affaire.titre)
-        self.entry_date = self._entry("Date :", self.affaire.date)
-        self.entry_lieu = self._entry("Lieu :", self.affaire.lieu)
-        self.entry_type = self._entry("Type :", self.affaire.type_affaire)
-        self.entry_resp = self._entry("Responsables :", self.affaire.responsables)
+        tk.Label(self.frame, text="Lieu").pack(anchor="w", pady=(10, 0))
+        self.lieu_entry = tk.Entry(self.frame)
+        self.lieu_entry.pack(fill="x")
+        self.lieu_entry.insert(0, self.affaire.lieu)
 
-        # État
-        tk.Label(self.frame, text="État :").pack(anchor="w", pady=(8, 0))
-        self.etat_var = tk.StringVar(value=self.affaire.etat)
-        tk.OptionMenu(self.frame, self.etat_var,
-                      "🟢 En cours",
-                      "🟡 À surveiller",
-                      "🔵 Gelée — manque d'informations",
-                      "🟣 Affaire classée").pack(fill="x")
+        tk.Label(self.frame, text="Type d'affaire").pack(anchor="w", pady=(10, 0))
+        self.type_affaire_combo = ttk.Combobox(
+            self.frame,
+            values=[
+                "Disparition inquiétante",
+                "Vol",
+                "Homicide",
+                "Fraude",
+                "Autre"
+            ]
+        )
+        self.type_affaire_combo.pack(fill="x")
+        self.type_affaire_combo.set(self.affaire.type_affaire)
 
-        # Urgence
-        tk.Label(self.frame, text="Urgence :").pack(anchor="w", pady=(8, 0))
-        self.urgence_ent = self._entry_raw(self.affaire.urgence)
+        # ---- Urgence / Etat
+        tk.Label(self.frame, text="Urgence").pack(anchor="w", pady=(10, 0))
+        self.urgence_combo = ttk.Combobox(
+            self.frame,
+            values=["🔴 Élevée", "🟠 Moyenne", "⚪ Faible"]
+        )
+        self.urgence_combo.pack(fill="x")
+        self.urgence_combo.set(self.affaire.urgence)
 
-        # Description
-        tk.Label(self.frame, text="Description :").pack(anchor="w", pady=(8, 0))
-        self.desc_txt = tk.Text(self.frame, height=5, wrap="word")
-        self.desc_txt.pack(fill="x")
+        # ---- État (OptionMenu)
+        tk.Label(self.frame, text="État").pack(anchor="w", pady=(10, 0))
+
+        etat_values = [
+            "🟢 En cours",
+            "🟡 À surveiller",
+            "🔵 Gelée — manque d'informations",
+            "🟣 Affaire classée",
+        ]
+
+        # Variable liée à l’OptionMenu
+        self.etat_var = tk.StringVar()
+
+        # Valeur par défaut (sécurité si valeur absente)
+        if self.affaire.etat in etat_values:
+            self.etat_var.set(self.affaire.etat)
+        else:
+            self.etat_var.set(etat_values[0])
+
+        self.etat_menu = tk.OptionMenu(
+            self.frame,
+            self.etat_var,
+            *etat_values
+        )
+        self.etat_menu.pack(fill="x")
+
+        # ---- Responsables
+        tk.Label(self.frame, text="Responsables").pack(anchor="w", pady=(10, 0))
+        self.responsables_entry = tk.Entry(self.frame)
+        self.responsables_entry.pack(fill="x")
+        self.responsables_entry.insert(0, self.affaire.responsables)
+
+        # ---- Description
+        tk.Label(self.frame, text="Description").pack(anchor="w", pady=(10, 0))
+        self.desc_txt = tk.Text(self.frame, height=6)
+        self.desc_txt.pack(fill="both")
         self.desc_txt.insert("1.0", self.affaire.description)
 
         # ---------------------------------------------------------
-        # PERSONNES
+        #   PERSONNES
         # ---------------------------------------------------------
-        tk.Label(self.frame, text="Personnes impliquées :", font=("Arial", 14, "bold")
-                 ).pack(anchor="w", pady=(15, 5))
+        tk.Label(self.frame, text="Personnes impliquées", font=("Arial", 12, "bold")).pack(
+            anchor="w", pady=(15, 5)
+        )
 
         self.personnes_container = tk.Frame(self.frame)
         self.personnes_container.pack(fill="x")
@@ -119,25 +166,38 @@ class ModifierAffaireView:
         for p in self.affaire.personnes:
             self._add_personne_widget(p)
 
-        tk.Button(self.frame, text="Ajouter une personne",
-                  command=self._add_personne_form).pack(pady=5)
+        tk.Button(self.frame, text="➕ Ajouter une personne", command=self._add_personne_form).pack(
+            anchor="w", pady=(8, 0)
+        )
 
         # ---------------------------------------------------------
-        # PHOTOS
+        #   PHOTOS
         # ---------------------------------------------------------
-        tk.Label(self.frame, text="Photos / pièces jointes :", font=("Arial", 14, "bold")
-                 ).pack(anchor="w", pady=(15, 5))
+        tk.Label(self.frame, text="Photos", font=("Arial", 12, "bold")).pack(
+            anchor="w", pady=(15, 5)
+        )
 
-        self.photos_listbox = tk.Listbox(self.frame, height=4)
-        self.photos_listbox.pack(fill="x", pady=5)
+        self.photos_listbox = tk.Listbox(self.frame, height=5)
+        self.photos_listbox.pack(fill="x")
 
         for ph in self.affaire.photos:
             self.photos_listbox.insert(tk.END, ph)
 
-        tk.Button(self.frame, text="Ajouter une photo", command=self.add_photo).pack(pady=5)
+        tk.Button(self.frame, text="📷 Ajouter une photo", command=self.add_photo).pack(
+            anchor="w", pady=(8, 0)
+        )
+
+        # ---------------------------------------------------------
+        #   BOUTONS
+        # ---------------------------------------------------------
+        btns = tk.Frame(self.frame)
+        btns.pack(fill="x", pady=15)
+
+        tk.Button(btns, text="💾 Enregistrer", command=self.save).pack(side="right", padx=5)
+        tk.Button(btns, text="Annuler", command=self.cancel).pack(side="right")
 
     # ---------------------------------------------------------
-    #   HELPERS POUR LES CHAMPS
+    #   OUTILS
     # ---------------------------------------------------------
     def _entry(self, label: str, value: str):
         tk.Label(self.frame, text=label).pack(anchor="w", pady=(8, 0))
@@ -155,6 +215,40 @@ class ModifierAffaireView:
     # ---------------------------------------------------------
     #   PERSONNES : AJOUT / AFFICHAGE
     # ---------------------------------------------------------
+    def _delete_personne(self, personne: Personne, row: tk.Frame):
+        """Supprime une personne de l'affaire (modèle + UI)."""
+        if not messagebox.askyesno(
+            "Supprimer",
+            f"Supprimer « {personne.role} – {personne.nom} » de l'affaire ?",
+            parent=self.popup
+        ):
+            return
+
+        # Retirer du modèle
+        try:
+            self.affaire.personnes.remove(personne)
+        except ValueError:
+            pass
+
+        # Retirer de l’UI
+        try:
+            row.destroy()
+        except Exception:
+            pass
+
+        # Nettoyage interne (optionnel mais propre)
+        try:
+            self.personnes_widgets.remove(row)
+        except ValueError:
+            pass
+
+        # Remettre la fenêtre devant (confort)
+        try:
+            self.popup.lift()
+            self.popup.focus_force()
+        except Exception:
+            pass
+
     def _add_personne_widget(self, personne: Personne):
         row = tk.Frame(self.personnes_container)
         row.pack(fill="x", pady=3)
@@ -162,8 +256,15 @@ class ModifierAffaireView:
         lbl = tk.Label(row, text=f"{personne.role} – {personne.nom}")
         lbl.pack(side="left")
 
-        tk.Button(row, text="Détails",
-                  command=lambda p=personne: self._edit_personne(p)).pack(side="right", padx=5)
+        tk.Button(
+            row, text="Détails",
+            command=lambda p=personne: self._edit_personne(p)
+        ).pack(side="right", padx=5)
+
+        tk.Button(
+            row, text="Supprimer", fg="red",
+            command=lambda p=personne, r=row: self._delete_personne(p, r)
+        ).pack(side="right", padx=5)
 
         self.personnes_widgets.append(row)
 
@@ -174,44 +275,66 @@ class ModifierAffaireView:
         popup.title("Ajouter une personne")
         popup.geometry("300x350")
 
-        # Rôle
-        tk.Label(popup, text="Rôle :").pack(anchor="w")
-        role_var = tk.StringVar(value="Victime")
-        tk.OptionMenu(popup, role_var, "Victime", "Suspect", "Témoin",
-                      "Auteur présumé", "Officier").pack(fill="x")
+        # Mettre la popup au-dessus
+        popup.transient(self.popup)
+        popup.grab_set()
+        popup.lift()
+        popup.focus_force()
 
-        # Nom
-        tk.Label(popup, text="Nom :").pack(anchor="w")
-        entry_nom = tk.Entry(popup)
-        entry_nom.pack(fill="x")
-
-        # Bouton ajouter
-        tk.Button(
+        tk.Label(popup, text="Rôle").pack(anchor="w", pady=(10, 0))
+        role_combo = ttk.Combobox(
             popup,
-            text="Ajouter",
-            command=lambda: self._confirm_add_personne(popup, role_var.get(), entry_nom.get())
-        ).pack(pady=10)
+            values=["🟦 Victime", "🟥 Suspect", "🟨 Témoin", "🟩 Autre"]
+        )
+        role_combo.pack(fill="x")
 
-    def _confirm_add_personne(self, popup, role, nom):
-        nom = nom.strip()
-        if not nom:
-            messagebox.showerror("Erreur", "Le nom est obligatoire.")
-            return
+        tk.Label(popup, text="Nom").pack(anchor="w", pady=(10, 0))
+        nom_entry = tk.Entry(popup)
+        nom_entry.pack(fill="x")
 
-        p = Personne(role=role, nom=nom)
-        self.affaire.personnes.append(p)
+        def create():
+            role = role_combo.get().strip()
+            nom = nom_entry.get().strip()
 
-        self._add_personne_widget(p)
+            if not role or not nom:
+                messagebox.showerror("Erreur", "Rôle et nom sont obligatoires.", parent=popup)
+                return
 
-        popup.destroy()
+            p = Personne(role=role, nom=nom)
 
-    # ---------------------------------------------------------
-    #   EDIT PERSONNE
-    # ---------------------------------------------------------
+            # Ajout au modèle
+            self.affaire.personnes.append(p)
+
+            # Ajout à l'UI
+            self._add_personne_widget(p)
+
+            popup.destroy()
+            # remettre la fenêtre principale devant
+            self.popup.lift()
+            self.popup.focus_force()
+
+        tk.Button(popup, text="Ajouter", command=create).pack(pady=15)
+
     def _edit_personne(self, personne: Personne):
+        """Edition complète d'une personne (popup)"""
         popup = tk.Toplevel(self.popup)
-        popup.title(f"Modifier : {personne.nom}")
-        popup.geometry("400x500")
+        popup.title("Détails personne")
+        popup.geometry("420x520")
+
+        # Mettre la popup au-dessus
+        popup.transient(self.popup)
+        popup.grab_set()
+        popup.lift()
+        popup.focus_force()
+
+        tk.Label(popup, text=f"{personne.role} – {personne.nom}", font=("Arial", 12, "bold")).pack(
+            pady=(10, 5)
+        )
+
+        tk.Label(popup, text="Nom").pack(anchor="w", pady=(6, 0))
+        nom_entry = tk.Entry(popup)
+        nom_entry.pack(fill="x")
+        nom_entry.insert(0, personne.nom)
 
         entries = {}
 
@@ -227,27 +350,37 @@ class ModifierAffaireView:
         field("Contact", "contact")
 
         # Liens
-        tk.Label(popup, text="Liens :").pack(anchor="w", pady=(6, 0))
-        txt_liens = tk.Text(popup, height=3)
-        txt_liens.pack(fill="x")
-        txt_liens.insert("1.0", personne.liens)
+        tk.Label(popup, text="Liens").pack(anchor="w", pady=(6, 0))
+        liens_txt = tk.Text(popup, height=4)
+        liens_txt.pack(fill="both")
+        liens_txt.insert("1.0", personne.liens)
 
         # Historique
-        tk.Label(popup, text="Historique :").pack(anchor="w", pady=(6, 0))
-        txt_hist = tk.Text(popup, height=4)
-        txt_hist.pack(fill="x")
-        txt_hist.insert("1.0", personne.historique)
+        tk.Label(popup, text="Historique").pack(anchor="w", pady=(6, 0))
+        hist_txt = tk.Text(popup, height=6)
+        hist_txt.pack(fill="both")
+        hist_txt.insert("1.0", personne.historique)
 
-        def save():
-            for key, entry in entries.items():
-                setattr(personne, key, entry.get().strip())
-
-            personne.liens = txt_liens.get("1.0", "end").strip()
-            personne.historique = txt_hist.get("1.0", "end").strip()
+        def save_personne():
+            personne.nom = nom_entry.get().strip()
+            for k, e in entries.items():
+                setattr(personne, k, e.get().strip())
+            personne.liens = liens_txt.get("1.0", "end").strip()
+            personne.historique = hist_txt.get("1.0", "end").strip()
 
             popup.destroy()
+            # remettre la fenêtre principale devant
+            self.popup.lift()
+            self.popup.focus_force()
 
-        tk.Button(popup, text="Enregistrer", command=save).pack(pady=10)
+            # Refresh de l'affichage des personnes (simple)
+            for w in self.personnes_widgets:
+                w.destroy()
+            self.personnes_widgets.clear()
+            for p in self.affaire.personnes:
+                self._add_personne_widget(p)
+
+        tk.Button(popup, text="Enregistrer", command=save_personne).pack(pady=10)
 
     # ---------------------------------------------------------
     #   PHOTOS
@@ -269,31 +402,17 @@ class ModifierAffaireView:
             self.popup.destroy()
 
     # ---------------------------------------------------------
-    #   RESET (RECHARGER L'AFFAIRE D'ORIGINE)
-    # ---------------------------------------------------------
-    def reset(self):
-        if not messagebox.askyesno("Réinitialiser", "Recharger les données d'origine ?"):
-            return
-
-        # Recréer une copie à partir de l’original
-        self.affaire = Affaire.from_dict(self.affaire_originale.to_dict(), path=self.affaire.path)
-
-        # Reconstruire la vue
-        self.popup.destroy()
-        self.build()
-
-    # ---------------------------------------------------------
-    #   COLLECTE ET SAUVEGARDE FINALE
+    #   SAUVEGARDE
     # ---------------------------------------------------------
     def save(self):
-        # Récupération des données
-        self.affaire.titre = self.entry_titre.get().strip()
-        self.affaire.date = self.entry_date.get().strip()
-        self.affaire.lieu = self.entry_lieu.get().strip()
-        self.affaire.type_affaire = self.entry_type.get().strip()
-        self.affaire.responsables = self.entry_resp.get().strip()
-        self.affaire.etat = self.etat_var.get().strip()
-        self.affaire.urgence = self.urgence_ent.get().strip()
+        # Récupération des champs
+        self.affaire.titre = self.titre_entry.get().strip()
+        self.affaire.date = self.date_picker.get_value()
+        self.affaire.lieu = self.lieu_entry.get().strip()
+        self.affaire.type_affaire = self.type_affaire_combo.get().strip()
+        self.affaire.urgence = self.urgence_combo.get().strip()
+        self.affaire.etat = self.etat_var.get()
+        self.affaire.responsables = self.responsables_entry.get().strip()
         self.affaire.description = self.desc_txt.get("1.0", "end").strip()
 
         if not self.affaire.titre:

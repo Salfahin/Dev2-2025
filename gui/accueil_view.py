@@ -6,6 +6,7 @@ from tkinter import messagebox
 from core.services.affaire_service import AffaireService
 from gui.nouvelle_affaire_view import NouvelleAffaireView
 from gui.ouvrir_affaire_view import OuvrirAffaireView
+from gui.filtrage import FiltreFenetre
 
 
 class AccueilView:
@@ -47,6 +48,8 @@ class AccueilView:
     #   BOUTONS DU HAUT
     # -------------------------------------------------------
     def build_top_buttons(self):
+        top_bar = tk.Frame(self.root)
+        top_bar.pack(fill="x", padx=40, pady=20)
         frame = tk.Frame(self.root)
         frame.pack(fill="x", padx=40, pady=20)
 
@@ -69,6 +72,32 @@ class AccueilView:
             command=self.show_affaires_classees
         )
         btn_closed.pack(side="left", expand=True, fill="x", padx=(10, 0))
+
+        #button de filtrage
+        btn_filter = tk.Button(
+            frame,
+            text="🔍 Filtrer",
+            font=("Arial", 16, "bold"),
+            padx=20, pady=15,
+            command=self.open_filter_popup
+        )
+        btn_filter.pack(side="left", expand=True, fill="x", padx=(10, 0))
+
+    #methode de filtrage
+    def open_filter_popup(self):
+        FiltreFenetre(
+            parent=self.root,
+            service=self.service,
+            on_apply=self.apply_filtered_affaires,
+            on_reset=self.reset_filter
+        )   
+
+    def apply_filtered_affaires(self, affaires):
+        self.render_affaires(affaires)
+
+    def reset_filter(self):
+        self.refresh()
+
 
     # -------------------------------------------------------
     #   AFFICHAGE DES AFFAIRES AVEC SCROLL
@@ -127,34 +156,41 @@ class AccueilView:
     #   AFFICHAGE DES AFFAIRES
     # -------------------------------------------------------
     def display_affaires(self):
-        # Charger les affaires métier
         affaires = self.service.get_all()
+        self.render_affaires(affaires)
+
+    # -----------------------------------------------
+    # interface principal des affaires après filtrage
+    #------------------------------------------------
+
+    def render_affaires(self, affaires: list):
+        # Nettoyer la zone scroll
+        for w in self.frame_global.winfo_children():
+            w.destroy()
 
         en_cours, surveiller, gelee = self.service.trier_par_etat(affaires)
 
         # Section : En cours
         tk.Label(self.frame_global, text="🟢 Affaires en cours",
-                 font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(10, 5))
-
+            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(10, 5))
         frame_cours = tk.Frame(self.frame_global, bg="#f0f0f0")
         frame_cours.pack(fill="x")
         self._afficher_cartes(frame_cours, en_cours)
 
         # Section : Surveiller
         tk.Label(self.frame_global, text="🟡 Affaires à surveiller",
-                 font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
-
+            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
         frame_surv = tk.Frame(self.frame_global, bg="#f0f0f0")
         frame_surv.pack(fill="x")
         self._afficher_cartes(frame_surv, surveiller)
 
         # Section : Gelée
         tk.Label(self.frame_global, text="🔵 Affaires gelées",
-                 font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
-
+            font=("Arial", 16, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(20, 5))
         frame_gel = tk.Frame(self.frame_global, bg="#f0f0f0")
         frame_gel.pack(fill="x")
         self._afficher_cartes(frame_gel, gelee)
+
 
     # -------------------------------------------------------
     #   AFFICHAGE D'UN ENSEMBLE DE CARTES

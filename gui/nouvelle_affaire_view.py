@@ -8,7 +8,8 @@ from typing import List, Callable, Optional
 from core.models.affaire import Affaire
 from core.models.personne import Personne
 from core.services.affaire_service import AffaireService
-
+from utils.date_time_picker import DateTimePicker
+from datetime import datetime
 
 # =========================================================
 #   CATALOGUES MÉTIER
@@ -106,7 +107,12 @@ class NouvelleAffaireView:
         frame.pack(padx=20, pady=10)
 
         self.entry_titre = self._champ(frame, "Titre de l’affaire :", 0)
-        self.entry_date = self._champ(frame, "Date et heure du signalement :", 1)
+        
+        #date et heure input
+        tk.Label(frame, text="Date et heure du signalement :").grid(row=1, column=0, sticky="w", padx=5)
+        self.date_picker = DateTimePicker(frame, initial="")
+        self.date_picker.grid(row=1, column=1, pady=5, sticky="w")
+
         self.entry_lieu = self._champ(frame, "Lieu de l’incident :", 2)
 
         # ---------------------------------------------------------
@@ -301,7 +307,7 @@ class NouvelleAffaireView:
 
         return Affaire(
             titre=titre,
-            date=self.entry_date.get().strip(),
+            date=self.date_picker.get_value(),
             lieu=self.entry_lieu.get().strip(),
             type_affaire=self.selected_type.get(),
             description=self.entry_desc.get("1.0", "end").strip(),
