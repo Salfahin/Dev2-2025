@@ -9,7 +9,6 @@ from gui.nouvelle_affaire_view import NouvelleAffaireView
 from gui.ouvrir_affaire_view import OuvrirAffaireView
 from gui.filtrage import FiltreFenetre
 
-
 class AccueilView:
     """
     Vue principale affichant la liste des affaires.
