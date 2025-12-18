@@ -9,6 +9,10 @@ from gui.nouvelle_affaire_view import NouvelleAffaireView
 from gui.ouvrir_affaire_view import OuvrirAffaireView
 from gui.filtrage import FiltreFenetre
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class AccueilView:
     """
@@ -25,6 +29,8 @@ class AccueilView:
         self._mousewheel_active = False
 
         self.build()
+
+        logger.info("AccueilView initialisée")
 
     # -------------------------------------------------------
     #   RECONSTRUIRE LA FENÊTRE
@@ -96,9 +102,11 @@ class AccueilView:
         )   
 
     def apply_filtered_affaires(self, affaires):
+        logger.info(f"Filtrage appliqué : {len(affaires)} affaires affichées")
         self.render_affaires(affaires)
 
     def reset_filter(self):
+        logger.info("Filtre réinitialisé")
         self.refresh()
 
 
@@ -268,15 +276,19 @@ class AccueilView:
         parent.bind("<Configure>", reposition)
         reposition()
 
+        logger.debug(f"{len(affaires)} cartes affichées dans la section")
+
     # -------------------------------------------------------
     #   SUPPRESSION D'UNE AFFAIRE
     # -------------------------------------------------------
     def _supprimer_affaire(self, affaire, widget):
         if not messagebox.askyesno("Supprimer", "Voulez-vous supprimer cette affaire ?"):
+            logger.info(f"Suppression annulée pour l'affaire {affaire.id}")
             return
 
         self.service.delete(affaire)
         widget.destroy()
+        logger.info(f"Affaire supprimée : {affaire.id} - {affaire.titre}")
         self.refresh()
 
     # -------------------------------------------------------
@@ -321,6 +333,8 @@ class AccueilView:
         classees = self.service.affaires_classees(affaires)
 
         self._afficher_cartes(frame, classees)
+
+        logger.info(f"Affichage des affaires classées : {len(classees)} affaires")
 
     # -------------------------------------------------------
     #   RAFRAICHIR L'ACCUEIL
