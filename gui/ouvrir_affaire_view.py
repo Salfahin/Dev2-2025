@@ -106,6 +106,18 @@ class OuvrirAffaireView:
         self._title("Description")
         self._line(self.affaire.description or "Aucune description fournie.")
 
+        #=============Armes==========================================
+        self._title("Armes utilisées")
+        if not self.affaire.armes:
+            self._line("Aucune arme n'a été utilisée.")
+        else:
+            for a in self.affaire.armes:
+                type_ = a.type_arme or "—"
+                nom = a.nom_arme or "—"
+                serie = a.serie_id_arme or "—"
+                self._line(f" {type_} – {nom} (N° série: {serie})")
+
+
         # ================== Personnes ==================
         self._title("Personnes impliquées")
         if not self.affaire.personnes:
