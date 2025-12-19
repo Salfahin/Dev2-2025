@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from core.models.personne import Personne
-
+from core.models.arme import Arme
 
 @dataclass
 class Affaire:
@@ -15,6 +15,7 @@ class Affaire:
     type_affaire: str
 
     description: str = ""
+    armes: list[Arme] = field(default_factory=list)
     responsables: str = ""
     photos: List[str] = field(default_factory=list)
     personnes: List[Personne] = field(default_factory=list)
@@ -36,6 +37,7 @@ class Affaire:
             Personne.from_dict(p) for p in data.get("personnes", [])
         ]
 
+
         return Affaire(
             titre=data.get("titre", ""),
             date=data.get("date", ""),
@@ -43,11 +45,13 @@ class Affaire:
             type_affaire=data.get("type_affaire", ""),
             description=data.get("description", ""),
             responsables=data.get("responsables", ""),
+            armes = [Arme.from_dict(a) for a in (data.get("armes", []) or [])],
             photos=data.get("photos", []),
             personnes=personnes,
             etat=data.get("etat", "🟢 En cours"),
             urgence=data.get("urgence", "⚪ Faible"),
             path=path
+            
         )
 
     def to_dict(self) -> Dict:
@@ -61,10 +65,12 @@ class Affaire:
             "type_affaire": self.type_affaire,
             "description": self.description,
             "responsables": self.responsables,
+            "armes": [a.to_dict() for a in (self.armes or [])],
             "photos": self.photos,
             "etat": self.etat,
             "urgence": self.urgence,
             "personnes": [p.to_dict() for p in self.personnes]
+            
         }
 
     # ---------------------------------------------------------
