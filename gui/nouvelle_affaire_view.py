@@ -11,6 +11,7 @@ from core.models.personne import Personne
 from core.services.affaire_service import AffaireService
 from utils.date_time_picker import DateTimePicker
 from datetime import datetime
+from core.models.arme import Arme, ArmeValidationError
 
 # =========================================================
 #   CATALOGUES MÉTIER
@@ -84,6 +85,8 @@ class NouvelleAffaireView:
 
         self.personnes_data: List[Personne] = []
         self.photos: List[str] = []
+        self.armes: list[Arme] = [] #permet d'avoir une liste d'objet "Arme"
+
 
         self.build()
 
@@ -164,16 +167,55 @@ class NouvelleAffaireView:
         self.entry_desc.grid(row=6, column=1, pady=5, sticky="w")
 
         self.entry_resp = self._champ(frame, "Responsable(s) :", 7)
+        # ---------------------------------------------------------
+        #   ARMES IMPLIQUÉES
+        # ---------------------------------------------------------
+        tk.Label(frame, text="Armes impliquées :").grid(row=8, column=0, sticky="nw", padx=5)
+
+        armes_frame = tk.Frame(frame)
+        armes_frame.grid(row=8, column=1, sticky="w")
+
+        # Ligne labels
+        labels = tk.Frame(armes_frame)
+        labels.pack(anchor="w")
+
+        tk.Label(labels, text="Type", width=14).pack(side="left", padx=2)
+        tk.Label(labels, text="Nom", width=14).pack(side="left", padx=2)
+        tk.Label(labels, text="N° série", width=14).pack(side="left", padx=2)
+
+        # Ligne inputs
+        inputs = tk.Frame(armes_frame)
+        inputs.pack(anchor="w", pady=2)
+
+        self.entry_type_arme = tk.Entry(inputs, width=14)
+        self.entry_type_arme.pack(side="left", padx=2)
+
+        self.entry_nom_arme = tk.Entry(inputs, width=14)
+        self.entry_nom_arme.pack(side="left", padx=2)
+
+        self.entry_serie_arme = tk.Entry(inputs, width=14)
+        self.entry_serie_arme.pack(side="left", padx=2)
+
+        tk.Button(
+            inputs,
+            text="Ajouter",
+            command=self.add_arme
+        ).pack(side="left", padx=5)
+
+        self.frame_liste_armes = tk.Frame(frame)
+        self.frame_liste_armes.grid(row=9, column=1, sticky="w")
+
+
 
         # ---------------------------------------------------------
         #   PHOTOS
         # ---------------------------------------------------------
-        tk.Label(frame, text="Photos / pièces jointes :").grid(row=8, column=0, sticky="nw", padx=5)
+        tk.Label(frame, text="Photos / pièces jointes :").grid(row=10, column=0, sticky="nw", padx=5)
 
         tk.Button(frame, text="Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).grid(row=8, column=1, sticky="w")
 
         self.photos_listbox = tk.Listbox(frame, width=45, height=3)
-        self.photos_listbox.grid(row=9, column=1, sticky="w")
+        self.photos_listbox.grid(row=11, column=1, sticky="w")
 
         # ---------------------------------------------------------
         #   ÉTAT / URGENCE
@@ -181,16 +223,16 @@ class NouvelleAffaireView:
         self.selected_etat = tk.StringVar(value="🟢 En cours")
         self.selected_urgence = tk.StringVar(value="⚪ Faible")
 
-        tk.Label(frame, text="État :").grid(row=10, column=0, sticky="w")
+        tk.Label(frame, text="État :").grid(row=12, column=0, sticky="w")
         tk.OptionMenu(
             frame,
             self.selected_etat,
             "🟢 En cours",
             "🟡 À surveiller",
             "🔵 Gelée — manque d'informations"
-        ).grid(row=10, column=1, sticky="w")
+        ).grid(row=12, column=1, sticky="w")
 
-        tk.Label(frame, text="Urgence :").grid(row=11, column=0, sticky="w")
+        tk.Label(frame, text="Urgence :").grid(row=13, column=0, sticky="w")
         tk.OptionMenu(
             frame,
             self.selected_urgence,
@@ -198,7 +240,7 @@ class NouvelleAffaireView:
             "🟡 Moyen",
             "🟠 Élevé",
             "🔴 Critique"
-        ).grid(row=11, column=1, sticky="w")
+        ).grid(row=13, column=1, sticky="w")
 
         # ---------------------------------------------------------
         #   BOUTONS
@@ -217,6 +259,53 @@ class NouvelleAffaireView:
         entry = tk.Entry(parent, width=50)
         entry.grid(row=row, column=1, pady=5, sticky="w")
         return entry
+
+    #------------------------------------------------------------------
+    # ARMES méthodes pour les armes
+    #------------------------------------------------------------------
+    """
+    - ajouter le type,nom,numéro de série d'une arme
+    - ajouter une ligne via un button
+    - supprimer une ligne et un objet (arme)
+    """
+    def add_arme(self):
+        try:
+            arme = Arme()
+            #d'abord nom et serie puis type_arme
+            arme.nom_arme = self.entry_nom_arme.get().strip()
+            arme.serie_id_arme = self.entry_serie_arme.get().strip()
+            arme.type_arme = self.entry_type_arme.get().strip()
+
+            self.armes.append(arme)
+
+            row = tk.Frame(self.frame_liste_armes)
+            row.pack(fill="x", pady=2)
+
+            tk.Label(
+                row,
+                text=f"{arme.type_arme} – {arme.nom_arme} (#{arme.serie_id_arme})",
+                width=45,
+                anchor="w"
+            ).pack(side="left")
+
+            tk.Button(
+                row,
+                text="❌",
+                command=lambda r=row, a=arme: self.remove_arme(r, a)
+            ).pack(side="left", padx=5)
+
+            # reset champs
+            self.entry_type_arme.delete(0, tk.END)
+            self.entry_nom_arme.delete(0, tk.END)
+            self.entry_serie_arme.delete(0, tk.END)
+
+        except ArmeValidationError as e:
+            messagebox.showerror("Arme invalide", str(e))
+
+    def remove_arme(self, row, arme: Arme):
+        self.armes.remove(arme)
+        row.destroy()
+
 
     # ---------------------------------------------------------
     #   PERSONNES
@@ -302,6 +391,9 @@ class NouvelleAffaireView:
     #   AFFAIRE
     # ---------------------------------------------------------
     def _collect_affaire(self) -> Affaire:
+        """
+        permet de transformer tout les donnees recuperer par les champs de l'interface UI pour créer un objet(Affaire)
+        """
         titre = self.entry_titre.get().strip()
         if not titre:
             raise ValueError("Le titre est obligatoire.")
@@ -315,9 +407,11 @@ class NouvelleAffaireView:
             responsables=self.entry_resp.get().strip(),
             photos=self.photos.copy(),
             personnes=self.personnes_data.copy(),
+            armes=self.armes.copy(),   
             etat=self.selected_etat.get(),
             urgence=self.selected_urgence.get(),
         )
+
 
     # ---------------------------------------------------------
     #   SAUVEGARDE / ANNULATION
