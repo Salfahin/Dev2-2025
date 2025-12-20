@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
@@ -91,16 +92,16 @@ class FiltreFenetre(tk.Toplevel):
         self.resume_lbl.pack(pady=(10, 0))
 
         #les buttons du pop-up
-        tk.Button(self, text="🔎 Mot-clé", command=self.filtre_mot_cle)\
+        tk.Button(self, text="🔎 Mot-clé", bg=PRIMARY, fg="white", command=self.filtre_mot_cle)\
             .pack(fill="x", pady=5, padx=10)
 
-        tk.Button(self, text="👤 Par personne (Victime/Suspect/Témoin)", command=self.filtre_personnes)\
+        tk.Button(self, text="👤 Par personne (Victime/Suspect/Témoin)", bg=PRIMARY, fg="white", command=self.filtre_personnes)\
             .pack(fill="x", pady=5, padx=10)
 
-        tk.Button(self, text="📍 Par lieu", command=self.filtre_lieu)\
+        tk.Button(self, text="📍 Par lieu", bg=PRIMARY, fg="white", command=self.filtre_lieu)\
             .pack(fill="x", pady=5, padx=10)
 
-        tk.Button(self, text="📅 Entre deux dates", command=self.filtre_dates)\
+        tk.Button(self, text="📅 Entre deux dates", bg=PRIMARY, fg="white", command=self.filtre_dates)\
             .pack(fill="x", pady=5, padx=10)
 
         tk.Label(self, text="").pack()
@@ -108,12 +109,12 @@ class FiltreFenetre(tk.Toplevel):
         #button réinitialiser
         tk.Button(
             self,
-            text="♻️ Réinitialiser",
+            text="♻️ Réinitialiser", bg=SUCCESS, fg="white",
             command=self.reset
         ).pack(fill="x", pady=5, padx=10)
 
         
-        tk.Button(self, text="✅ Appliquer filtre", command=self.apply_filters)\
+        tk.Button(self, text="✅ Appliquer filtre", bg=SUCCESS, fg="white", command=self.apply_filters)\
             .pack(fill="x", pady=5, padx=10)
 
 

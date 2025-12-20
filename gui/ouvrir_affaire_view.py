@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 from tkinter import messagebox
@@ -40,15 +41,15 @@ class OuvrirAffaireView:
         tk.Label(
             top,
             text=self.affaire.titre,
-            font=("Arial", 20, "bold"),
-            bg="#f8f8f8"
+            font=TITLE_FONT,
+            bg=BG_MAIN
         ).pack(side="left", padx=15, pady=10)
 
         tk.Button(
             top,
             text="Modifier ✎",
-            font=("Arial", 12, "bold"),
-            bg="#e0e0e0",
+            font=BUTTON_FONT,
+            bg=PRIMARY, fg="white",
             command=self.open_modification
         ).pack(side="right", padx=15, pady=10)
 
@@ -84,11 +85,11 @@ class OuvrirAffaireView:
     #   REMPLISSAGE DU CONTENU
     # ---------------------------------------------------------
     def _title(self, text: str):
-        tk.Label(self.frame, text=text, font=("Arial", 16, "bold"),
+        tk.Label(self.frame, text=text, font=TITLE_FONT,
                  bg="white").pack(anchor="w", pady=(15, 5))
 
     def _line(self, text: str):
-        tk.Label(self.frame, text=text, font=("Arial", 12),
+        tk.Label(self.frame, text=text, font=TEXT_FONT,
                  bg="white", wraplength=700, justify="left").pack(anchor="w", pady=3)
 
     def _fill(self):
@@ -149,7 +150,7 @@ class OuvrirAffaireView:
         tk.Button(
             self.frame,
             text="Fermer",
-            font=("Arial", 12),
+            font=BUTTON_FONT, bg=DANGER, fg="white",
             command=self.popup.destroy
         ).pack(pady=20)
 

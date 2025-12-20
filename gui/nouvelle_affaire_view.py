@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -104,7 +105,7 @@ class NouvelleAffaireView:
         contenu = tk.Frame(wrapper)
         contenu.pack()
 
-        tk.Label(contenu, text="Nouvelle Affaire", font=("Arial", 18)).pack(pady=10)
+        tk.Label(contenu, text="Nouvelle Affaire", font=TITLE_FONT).pack(pady=10)
 
         frame = tk.Frame(contenu)
         frame.pack(padx=20, pady=10)
@@ -152,7 +153,7 @@ class NouvelleAffaireView:
         self.entry_nom = tk.Entry(personnes_frame, width=18)
         self.entry_nom.pack(side="left", padx=5)
 
-        tk.Button(personnes_frame, text="Ajouter", command=self.add_personne).pack(side="left")
+        tk.Button(personnes_frame, text="Ajouter", bg=PRIMARY, fg="white", command=self.add_personne).pack(side="left")
 
         self.frame_liste_personnes = tk.Frame(frame)
         self.frame_liste_personnes.grid(row=5, column=1, sticky="w")
@@ -211,7 +212,7 @@ class NouvelleAffaireView:
         # ---------------------------------------------------------
         tk.Label(frame, text="Photos / pièces jointes :").grid(row=10, column=0, sticky="nw", padx=5)
 
-        tk.Button(frame, text="Ajouter une photo", command=self.add_photo).grid(row=10, column=1, sticky="w")
+        tk.Button(frame, text="Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).grid(row=8, column=1, sticky="w")
 
         self.photos_listbox = tk.Listbox(frame, width=45, height=3)
         self.photos_listbox.grid(row=11, column=1, sticky="w")
@@ -247,8 +248,8 @@ class NouvelleAffaireView:
         btns = tk.Frame(contenu)
         btns.pack(pady=20)
 
-        tk.Button(btns, text="Annuler", fg="red", width=15, command=self.cancel).pack(side="left", padx=10)
-        tk.Button(btns, text="Enregistrer l’affaire", width=20, command=self.save).pack(side="left", padx=10)
+        tk.Button(btns, text="Annuler", font=BUTTON_FONT, bg=DANGER, fg="white", width=15, command=self.cancel).pack(side="left", padx=10)
+        tk.Button(btns, text="Enregistrer l’affaire", width=20, font=BUTTON_FONT, bg=SUCCESS, fg="white", command=self.save).pack(side="left", padx=10)
 
     # ---------------------------------------------------------
     #   UTILITAIRES

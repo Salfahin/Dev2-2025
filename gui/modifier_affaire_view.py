@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -203,7 +204,7 @@ class ModifierAffaireView:
         for p in self.affaire.personnes:
             self._add_personne_widget(p)
 
-        tk.Button(self.frame, text="➕ Ajouter une personne", command=self._add_personne_form).pack(
+        tk.Button(self.frame, text="➕ Ajouter une personne", bg=PRIMARY, fg="white", command=self._add_personne_form).pack(
             anchor="w", pady=(8, 0)
         )
 
@@ -220,7 +221,7 @@ class ModifierAffaireView:
         for ph in self.affaire.photos:
             self.photos_listbox.insert(tk.END, ph)
 
-        tk.Button(self.frame, text="📷 Ajouter une photo", command=self.add_photo).pack(
+        tk.Button(self.frame, text="📷 Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).pack(
             anchor="w", pady=(8, 0)
         )
 
@@ -230,8 +231,8 @@ class ModifierAffaireView:
         btns = tk.Frame(self.frame)
         btns.pack(fill="x", pady=15)
 
-        tk.Button(btns, text="💾 Enregistrer", command=self.save).pack(side="right", padx=5)
-        tk.Button(btns, text="Annuler", command=self.cancel).pack(side="right")
+        tk.Button(btns, text="💾 Enregistrer", bg=PRIMARY, fg="white", command=self.save).pack(side="right", padx=5)
+        tk.Button(btns, text="Annuler", bg=PRIMARY, fg="white", command=self.cancel).pack(side="right")
 
     # ---------------------------------------------------------
     #   OUTILS/ METHODE
@@ -343,12 +344,12 @@ class ModifierAffaireView:
         lbl.pack(side="left")
 
         tk.Button(
-            row, text="Détails",
+            row, text="Détails", bg=PRIMARY, fg="white",
             command=lambda p=personne: self._edit_personne(p)
         ).pack(side="right", padx=5)
 
         tk.Button(
-            row, text="Supprimer", fg="red",
+            row, text="Supprimer", bg=DANGER, fg="white",
             command=lambda p=personne, r=row: self._delete_personne(p, r)
         ).pack(side="right", padx=5)
 
