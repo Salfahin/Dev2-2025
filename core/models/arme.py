@@ -5,9 +5,16 @@ class ArmeValidationError(Exception):
     """Erreur de validation d'une arme."""
 @dataclass
 class Arme:
+    """
+    Class d'une arme qui possèdent:
+    - le type d'arme
+    - le nom de l'arme
+    - le numéro de série
+
+    """
     _type_arme: str | None = None
     _nom_arme: str | None = None
-    _serie_id_arme: int | None = None
+    _serie_id_arme: str | None = None
 
     @property
     def type_arme(self) -> str | None:
@@ -35,11 +42,11 @@ class Arme:
     # NUMÉRO DE SÉRIE
     # -------------------
     @property
-    def serie_id_arme(self) -> int | None:
+    def serie_id_arme(self) -> str | None:
         return self._serie_id_arme
 
     @serie_id_arme.setter
-    def serie_id_arme(self, valeur: int | None) -> None:
+    def serie_id_arme(self, valeur: str | None) -> None:
         if valeur is not None and valeur.strip() == "":
             raise ArmeValidationError("Le numéro de série ne peut pas être vide.")
         self._serie_id_arme = valeur

@@ -216,8 +216,8 @@ class FiltreFenetre(tk.Toplevel):
         affaires = self.service.get_all()
 
         # 1) collecter toutes les personnes uniques (role + nom)
-        personnes = []
-        seen = set()
+        personnes = [] #liste final
+        seen = set() #seen → ensemble (set) pour éviter les doublons
 
         for a in affaires:
             for p in (getattr(a, "personnes", []) or []):
@@ -226,7 +226,7 @@ class FiltreFenetre(tk.Toplevel):
                 if not nom:
                     continue
                 key = (role, _norm(nom))
-                if key in seen:
+                if key in seen: #permet d'éviter les doublons avec la normalisation des noms
                     continue
                 seen.add(key)
                 personnes.append((role, nom))
@@ -234,8 +234,8 @@ class FiltreFenetre(tk.Toplevel):
         if not personnes:
             messagebox.showinfo("Info", "Aucune personne trouvée dans les affaires.", parent=self)
             return
-
-        personnes.sort(key=lambda x: _norm(x[1]))
+        
+        personnes.sort(key=lambda x: _norm(x[1])) #personnes contient [(role,nom),(role,nom)]
 
         # 2) popup
         popup = tk.Toplevel(self)
