@@ -212,7 +212,7 @@ class NouvelleAffaireView:
         # ---------------------------------------------------------
         tk.Label(frame, text="Photos / pièces jointes :").grid(row=10, column=0, sticky="nw", padx=5)
 
-        tk.Button(frame, text="Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).grid(row=8, column=1, sticky="w")
+        tk.Button(frame, text="Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).grid(row=10, column=1, sticky="w")
 
         self.photos_listbox = tk.Listbox(frame, width=45, height=3)
         self.photos_listbox.grid(row=11, column=1, sticky="w")
