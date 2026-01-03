@@ -19,7 +19,6 @@ class Affaire:
     responsables: str = ""
     photos: List[str] = field(default_factory=list)
     personnes: List[Personne] = field(default_factory=list)
-
     etat: str = "🟢 En cours"
     urgence: str = "⚪ Faible"
 

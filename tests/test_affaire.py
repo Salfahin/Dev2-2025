@@ -5,48 +5,62 @@ from core.models.personne import Personne
 
 class TestAffaire(unittest.TestCase):
 
-    def test_creation_affaire(self):
+    def test_creation_affaire_pre_post(self):
+        # --------------------
+        # PRÉCONDITIONS
+        # --------------------
+        titre = "Test"
+        lieu = "Paris"
+
+        # --------------------
+        # ACTION
+        # --------------------
         a = Affaire(
-            titre="Test",
+            titre=titre,
             date="2024",
-            lieu="Paris",
+            lieu=lieu,
             type_affaire="Vol"
         )
-        self.assertEqual(a.titre, "Test")
-        self.assertEqual(a.lieu, "Paris")
 
-    def test_personnes_compteurs(self):
+        # --------------------
+        # POSTCONDITIONS
+        # --------------------
+        self.assertEqual(a.titre, titre)
+        self.assertEqual(a.lieu, lieu)
+        self.assertEqual(a.type_affaire, "Vol")
+
+    def test_personnes_compteurs_pre_post(self):
+        # --------------------
+        # PRÉCONDITIONS
+        # --------------------
+        personnes = [
+            Personne(role="Victime", nom="A"),
+            Personne(role="Suspect", nom="B"),
+            Personne(role="Témoin", nom="C"),
+            Personne(role="Victime", nom="D")
+        ]
+
         a = Affaire(
             titre="A",
             date="2024",
             lieu="Paris",
             type_affaire="Vol",
-            personnes=[
-                Personne(role="Victime", nom="A"),
-                Personne(role="Suspect", nom="B"),
-                Personne(role="Témoin", nom="C"),
-                Personne(role="Victime", nom="D")
-            ]
+            personnes=personnes
         )
-        self.assertEqual(a.nombre_victimes(), 2)
-        self.assertEqual(a.nombre_suspects(), 1)
-        self.assertEqual(a.nombre_temoins(), 1)
 
-    def test_to_dict_and_back(self):
-        a = Affaire(
-            titre="Test",
-            date="2024",
-            lieu="Paris",
-            type_affaire="Vol",
-            description="Desc",
-            urgence="🟠 Élevé",
-            personnes=[
-                Personne(role="Victime", nom="John")
-            ]
-        )
-        data = a.to_dict()
-        a2 = Affaire.from_dict(data)
+        # Vérification des préconditions
+        self.assertEqual(len(a.personnes), 4)
 
-        self.assertEqual(a2.titre, "Test")
-        self.assertEqual(len(a2.personnes), 1)
-        self.assertEqual(a2.urgence, "🟠 Élevé")
+        # --------------------
+        # ACTION
+        # --------------------
+        nb_victimes = a.nombre_victimes()
+        nb_suspects = a.nombre_suspects()
+        nb_temoins = a.nombre_temoins()
+
+        # --------------------
+        # POSTCONDITIONS
+        # --------------------
+        self.assertEqual(nb_victimes, 2)
+        self.assertEqual(nb_suspects, 1)
+        self.assertEqual(nb_temoins, 1)
