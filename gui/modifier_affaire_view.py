@@ -1,4 +1,5 @@
 from __future__ import annotations
+from gui.theme import *
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -9,7 +10,7 @@ from core.models.affaire import Affaire
 from core.models.personne import Personne
 from core.services.affaire_service import AffaireService
 from utils.date_time_picker import DateTimePicker
-
+from core.models.arme import Arme , ArmeValidationError
 
 class ModifierAffaireView:
     """
@@ -26,6 +27,8 @@ class ModifierAffaireView:
         self.root = root
         self.service = service
         self.on_done = on_done
+        self.armes: list[Arme] = list(getattr(affaire, "armes", []) or [])
+
 
         # On travaille sur une copie modifiable
         self.affaire = Affaire.from_dict(affaire.to_dict(), path=affaire.path)
@@ -86,12 +89,13 @@ class ModifierAffaireView:
         self.date_picker = DateTimePicker(self.frame, initial=self.affaire.date)
         self.date_picker.pack(anchor="w", pady=(0, 6))
 
-
+        #lieu
         tk.Label(self.frame, text="Lieu").pack(anchor="w", pady=(10, 0))
         self.lieu_entry = tk.Entry(self.frame)
         self.lieu_entry.pack(fill="x")
         self.lieu_entry.insert(0, self.affaire.lieu)
 
+        #type d'affaire
         tk.Label(self.frame, text="Type d'affaire").pack(anchor="w", pady=(10, 0))
         self.type_affaire_combo = ttk.Combobox(
             self.frame,
@@ -147,6 +151,40 @@ class ModifierAffaireView:
         self.responsables_entry.pack(fill="x")
         self.responsables_entry.insert(0, self.affaire.responsables)
 
+
+        # ---------------------------------------------------------
+        #   ARMES IMPLIQUÉES
+        # ---------------------------------------------------------
+        tk.Label(self.frame, text="Armes impliquées", font=("Arial", 12, "bold")).pack(
+            anchor="w", pady=(15, 5)
+        )
+
+        # zone d'ajout
+        armes_input = tk.Frame(self.frame)
+        armes_input.pack(fill="x", pady=5)
+
+        tk.Label(armes_input, text="Type").pack(side="left")
+        self.entry_type_arme = tk.Entry(armes_input, width=15)
+        self.entry_type_arme.pack(side="left", padx=5)
+
+        tk.Label(armes_input, text="Nom").pack(side="left")
+        self.entry_nom_arme = tk.Entry(armes_input, width=15)
+        self.entry_nom_arme.pack(side="left", padx=5)
+
+        tk.Label(armes_input, text="N° série").pack(side="left")
+        self.entry_serie_arme = tk.Entry(armes_input, width=15)
+        self.entry_serie_arme.pack(side="left", padx=5)
+
+        tk.Button(armes_input, text="Ajouter", command=self.add_arme).pack(side="left", padx=5)
+
+        # liste des armes
+        self.frame_liste_armes = tk.Frame(self.frame)
+        self.frame_liste_armes.pack(fill="x", pady=5)
+
+        for arme in self.armes:
+            self._render_arme_row(arme)
+
+
         # ---- Description
         tk.Label(self.frame, text="Description").pack(anchor="w", pady=(10, 0))
         self.desc_txt = tk.Text(self.frame, height=6)
@@ -166,7 +204,7 @@ class ModifierAffaireView:
         for p in self.affaire.personnes:
             self._add_personne_widget(p)
 
-        tk.Button(self.frame, text="➕ Ajouter une personne", command=self._add_personne_form).pack(
+        tk.Button(self.frame, text="➕ Ajouter une personne", bg=PRIMARY, fg="white", command=self._add_personne_form).pack(
             anchor="w", pady=(8, 0)
         )
 
@@ -183,7 +221,7 @@ class ModifierAffaireView:
         for ph in self.affaire.photos:
             self.photos_listbox.insert(tk.END, ph)
 
-        tk.Button(self.frame, text="📷 Ajouter une photo", command=self.add_photo).pack(
+        tk.Button(self.frame, text="📷 Ajouter une photo", bg=PRIMARY, fg="white", command=self.add_photo).pack(
             anchor="w", pady=(8, 0)
         )
 
@@ -193,12 +231,61 @@ class ModifierAffaireView:
         btns = tk.Frame(self.frame)
         btns.pack(fill="x", pady=15)
 
-        tk.Button(btns, text="💾 Enregistrer", command=self.save).pack(side="right", padx=5)
-        tk.Button(btns, text="Annuler", command=self.cancel).pack(side="right")
+        tk.Button(btns, text="💾 Enregistrer", bg=PRIMARY, fg="white", command=self.save).pack(side="right", padx=5)
+        tk.Button(btns, text="Annuler", bg=PRIMARY, fg="white", command=self.cancel).pack(side="right")
 
     # ---------------------------------------------------------
-    #   OUTILS
+    #   OUTILS/ METHODE
     # ---------------------------------------------------------
+
+    def _render_arme_row(self, arme: Arme):
+        row = tk.Frame(self.frame_liste_armes)
+        row.pack(fill="x", pady=2)
+
+        tk.Label(
+            row,
+            text=f"{arme.type_arme} – {arme.nom_arme} (#{arme.serie_id_arme})",
+            width=45,
+            anchor="w"
+        ).pack(side="left")
+
+        tk.Button(
+            row,
+            text="❌",
+            command=lambda r=row, a=arme: self.remove_arme(r, a)
+        ).pack(side="left", padx=5)
+
+    def add_arme(self):
+        try:
+            type_ = self.entry_type_arme.get().strip()
+            nom = self.entry_nom_arme.get().strip()
+            serie = self.entry_serie_arme.get().strip()
+
+            if not type_ and not nom and not serie:
+                return
+
+            arme = Arme()
+            arme.nom_arme = nom
+            arme.serie_id_arme = serie
+            arme.type_arme = type_
+
+            self.armes.append(arme)
+            self._render_arme_row(arme)
+
+            self.entry_type_arme.delete(0, tk.END)
+            self.entry_nom_arme.delete(0, tk.END)
+            self.entry_serie_arme.delete(0, tk.END)
+
+        except ArmeValidationError as e:
+            messagebox.showerror("Arme invalide", str(e))
+
+    def remove_arme(self, row, arme: Arme):
+        if arme in self.armes:
+            self.armes.remove(arme)
+        row.destroy()
+
+
+
     def _entry(self, label: str, value: str):
         tk.Label(self.frame, text=label).pack(anchor="w", pady=(8, 0))
         entry = tk.Entry(self.frame)
@@ -257,12 +344,12 @@ class ModifierAffaireView:
         lbl.pack(side="left")
 
         tk.Button(
-            row, text="Détails",
+            row, text="Détails", bg=PRIMARY, fg="white",
             command=lambda p=personne: self._edit_personne(p)
         ).pack(side="right", padx=5)
 
         tk.Button(
-            row, text="Supprimer", fg="red",
+            row, text="Supprimer", bg=DANGER, fg="white",
             command=lambda p=personne, r=row: self._delete_personne(p, r)
         ).pack(side="right", padx=5)
 
@@ -394,6 +481,8 @@ class ModifierAffaireView:
             self.affaire.photos.append(fichier)
             self.photos_listbox.insert(tk.END, fichier)
 
+
+
     # ---------------------------------------------------------
     #   ANNULATION
     # ---------------------------------------------------------
@@ -423,6 +512,7 @@ class ModifierAffaireView:
         self.affaire.etat = self.etat_var.get()
         self.affaire.responsables = self.responsables_entry.get().strip()
         self.affaire.description = self.desc_txt.get("1.0", "end").strip()
+        self.affaire.armes = self.armes.copy()
 
         if not self.affaire.titre:
             messagebox.showerror("Erreur", "Le titre est obligatoire.")

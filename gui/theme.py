@@ -13,8 +13,9 @@ TEXT_MAIN = "#0f172a"
 TEXT_MUTED = "#64748b"
 BORDER = "#e5e7eb"
 
-TITLE_FONT = ("Segoe UI", 20, "bold")
+TITLE_FONT = ("Segoe UI", 16, "bold")
 SECTION_FONT = ("Segoe UI", 15, "bold")
 CARD_TITLE_FONT = ("Segoe UI", 12, "bold")
 TEXT_FONT = ("Segoe UI", 11)
-BUTTON_FONT = ("Segoe UI", 13, "bold")
+CARD_FONT = ("Segoe UI", 9)
+BUTTON_FONT = ("Segoe UI", 10, "bold")

@@ -9,7 +9,6 @@ from gui.nouvelle_affaire_view import NouvelleAffaireView
 from gui.ouvrir_affaire_view import OuvrirAffaireView
 from gui.filtrage import FiltreFenetre
 
-
 class AccueilView:
     """
     Vue principale affichant la liste des affaires.
@@ -60,7 +59,7 @@ class AccueilView:
         btn_new = tk.Button(
             frame,
             text="Nouvelle Affaire",
-            font=("Arial", 16, "bold"),
+            font=TITLE_FONT,
             padx=20, pady=15, bg=PRIMARY, fg="white",
             command=lambda: NouvelleAffaireView(self.root, self.service, on_done=self.refresh)
         )
@@ -70,7 +69,7 @@ class AccueilView:
         btn_closed = tk.Button(
             frame,
             text="Affaires classées",
-            font=("Arial", 16, "bold"),
+            font=TITLE_FONT,
             padx=20, pady=15, bg=PRIMARY, fg="white",
             command=self.show_affaires_classees
         )
@@ -80,7 +79,7 @@ class AccueilView:
         btn_filter = tk.Button(
             frame,
             text="🔍 Filtrer",
-            font=("Arial", 16, "bold"),
+            font=TITLE_FONT,
             padx=20, pady=15, bg=PRIMARY, fg="white",
             command=self.open_filter_popup
         )
@@ -211,19 +210,19 @@ class AccueilView:
             # Texte
             tk.Label(content, text=affaire.titre, font=CARD_TITLE_FONT, bg=BG_CARD, fg=TEXT_MAIN).pack(anchor="w")
 
-            tk.Label(content, text=f"📍 {affaire.lieu}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
-            tk.Label(content, text=f"🧩 {affaire.type_affaire}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
-            tk.Label(content, text=f"👮 {affaire.responsables}", bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
+            tk.Label(content, text=f"📍 {affaire.lieu}", font=CARD_FONT, bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
+            tk.Label(content, text=f"🧩 {affaire.type_affaire}", font=CARD_FONT, bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
+            tk.Label(content, text=f"👮 {affaire.responsables}", font=CARD_FONT, bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
 
             tk.Label(content, text=f"Victimes: {affaire.nombre_victimes()}   "
                                    f"Suspects: {affaire.nombre_suspects()}   "
                                    f"Témoins: {affaire.nombre_temoins()}",
-                     bg="white").pack(anchor="w")
+                     font=CARD_FONT, bg=BG_CARD, fg=TEXT_MUTED).pack(anchor="w")
 
             # Ouvrir affaire
             tk.Button(content,
                 text="Ouvrir",
-                font=("Segoe UI", 10, "bold"),
+                font=BUTTON_FONT,
                 bg=PRIMARY,
                 fg="white",
                 bd=0,
@@ -242,7 +241,7 @@ class AccueilView:
                 fg=DANGER,
                 bg=BG_CARD,
                 bd=0, cursor="hand2",
-                font=("Segoe UI", 11, "bold"),
+                font=BUTTON_FONT,
                 activeforeground="#991b1b",
                 command=lambda a=affaire, c=card: self._supprimer_affaire(a, c)
             )
@@ -292,7 +291,7 @@ class AccueilView:
         top = tk.Frame(self.root, bg=BG_MAIN)
         top.pack(fill="x", padx=40, pady=10)
 
-        tk.Button(top, text="⬅ Retour", font=("Arial", 12, "bold"),
+        tk.Button(top, text="⬅ Retour", bg=PRIMARY, fg="white", font=("Arial", 12, "bold"),
                   command=self.refresh).pack(side="left")
 
         tk.Label(top, text="Affaires classées", font=("Arial", 18, "bold"), bg=BG_MAIN).pack(side="left", padx=40)
