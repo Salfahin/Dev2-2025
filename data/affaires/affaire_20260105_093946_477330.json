@@ -1,0 +1,29 @@
+{
+    "titre": "erg",
+    "date": "2026-01-05 09:39",
+    "lieu": "erh",
+    "type_affaire": "Cambriolage",
+    "description": "dgnsfhn,gngf,",
+    "responsables": "srth",
+    "armes": [
+        {
+            "type_arme": "sgjn",
+            "nom_arme": "sgn",
+            "serie_id_arme": "sfg,"
+        }
+    ],
+    "photos": [],
+    "etat": "🟣 Affaire classée",
+    "urgence": "⚪ Faible",
+    "personnes": [
+        {
+            "role": "Victime",
+            "nom": "dfn",
+            "identité": "",
+            "adresse": "",
+            "contact": "",
+            "liens": "",
+            "historique": ""
+        }
+    ]
+}
